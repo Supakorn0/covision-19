@@ -1,0 +1,3051 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>covision-19</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <img src="covid_logo.png"  width="110" height="100">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav" style="font-size: 1.5rem">
+            <a class="nav-item nav-link" href="file:///C:/Users/Flash/Desktop/covision-19/covision-19/index.html">Home <span class="sr-only"></span></a>
+            <a class="nav-item nav-link active" href="file:///C:/Users/Flash/Desktop/covision-19/covision-19/map.html">Map</a>
+            <a class="nav-item nav-link" href="file:///C:/Users/Flash/Desktop/covision-19/covision-19/contactUs.html">ContactUs</a>
+          </div>
+        </div>
+      </nav>
+      <style type="text/css">
+        html {
+          height: 100%;
+        }
+        body {
+          margin: 0px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+        section {
+          margin: 0px;
+          height: 100%;
+          display: flex;
+          flex-direction: row;
+        }
+        .bodymap{
+          background-color: white;
+        }
+        
+        #map {
+          height:100%;
+          flex: 4;
+        }
+        #searchPlace{
+          flex: 2;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .btn-danger {
+          height: 40px;
+          width: 50%;
+        }
+
+        </style>
+                <script type="text/javascript" src="https://api.longdo.com/map/?key=784207def121f6d7409241c00d20a54b"></script>
+          </head>
+            <section>
+                <body onload="init();" id="bodymap">
+                <div id="map"></div> 
+                <!-- <div id="searchPlace">
+                    <button type="button" class="btn btn-danger" onclick="newcase();"style="font-size: 1rem;">new_case</button>
+                    <button type="button" class="btn btn-danger" onclick="totalcase();"style="font-size: 1rem;">total_case</button>
+                    <button type="button" class="btn btn-danger" onclick="totaldeath();"style="font-size: 1rem;">total_death</button>
+                    <p style="font-size: 1rem;" id="province">test</p>
+                    <p style="font-size: 1rem;" id="new_case">test</p>
+                    <p style="font-size: 1rem;" id="new_death">test</p>
+                    <p style="font-size: 1rem;" id="total_death">test</p>
+                    <p style="font-size: 1rem;" id="total_case">test</p>
+
+                    <p style="font-size: 1rem;" id="new_case2">test</p>
+                    <p style="font-size: 1rem;" id="new_death2">test</p>
+                    <p style="font-size: 1rem;" id="total_death2">test</p>
+                    <p style="font-size: 1rem;" id="total_case2">test</p>
+                    <p style="font-size: 1rem;" id="total_recovered2">test</p>
+                    <table class="test" id="test">
+                        <tr>
+                            <th>province</th>
+                            <th>new_case</th>
+                            <th>total_case</th>
+                            <th>สถานะ</th>
+                        </tr>
+                        <tr>
+                            
+                        </tr>
+                    </table>
+                </div> -->
+                </body>
+            </section>
+
+            <script>
+                const detail = [];
+                // var provinceValue = "กรุงเทพมหานคร"
+                // let province = document.getElementById("province");
+                // let new_cases = document.getElementById("new_case");
+                // let new_death = document.getElementById("new_death");
+                // let total_death = document.getElementById("total_death");
+                // let total_cases = document.getElementById("total_case");
+                // let table = document.getElementById('test')
+
+                // let province1 = document.getElementById("province1");
+                // let new_cases1 = document.getElementById("new_case1");
+                // let total_cases1 = document.getElementById("total_case1");
+
+                // let showprovince;
+                const new_caseColor =[];
+                const total_caseColor =[];
+                const total_deathColor =[];
+
+                // let new_cases2 = document.getElementById("new_case2");
+                // let new_death2 = document.getElementById("new_death2");
+                // let total_death2 = document.getElementById("total_death2");
+                // let total_cases2 = document.getElementById("total_case2");
+                // let total_recovered2 = document.getElementById("total_recovered2");
+
+                async function getUser(){
+                    let response = await fetch('https://covid19.ddc.moph.go.th/api/Cases/today-cases-by-provinces');
+                    console.log(response);
+                    let data = await response.json();
+                    // data.forEach(val => {
+                    //     if(val.province == provinceValue){
+                    //         province.innerHTML = val.province;
+                    //         new_cases.innerHTML = val.new_case;
+                    //         new_death.innerHTML = val.new_death;
+                    //         total_death.innerHTML = val.total_death;
+                    //         total_cases.innerHTML = val.total_case;
+                    //         showprovince = val.province
+                    //     }
+                    // });
+                    
+                 
+                    for (let i = 0; i < data.length -1; i++) {
+                        console.log(data[i]);
+                        detail.push([data[i].province,data[i].new_case,data[i].total_case,data[i].total_death]);
+                        console.log(detail)
+                        // let row = table.insertRow(i + 1);
+                        // let province = row.insertCell(0);
+                        // let new_case = row.insertCell(1);
+                        // let total_case = row.insertCell(2);
+                        // let cell6 = row.insertCell(3);
+                        // province.innerHTML = data[i].province;
+                        // new_case.innerHTML = data[i].new_case;
+                        // total_case.innerHTML = data[i].total_case;
+                        // cell6.innerHTML=f;
+                        if (data[i].new_case == 0) {
+                            new_caseColor.push("#FFFDE7")
+                        }
+                        else if (data[i].new_case >= 1 && data[i].new_case < 100) {
+                            new_caseColor.push("#FFFF00")
+                        }
+                        else if (data[i].new_case >= 100 && data[i].new_case < 200) {
+                            new_caseColor.push("#FDD835")
+                        }
+                        else if (data[i].new_case >= 200 && data[i].new_case < 300) {
+                            new_caseColor.push("#FFB300")
+                        }
+                        else if (data[i].new_case >= 300 && data[i].new_case < 400) {
+                            new_caseColor.push("#FF8F00")
+                        }
+                        else if (data[i].new_case >= 400 && data[i].new_case < 500) {
+                            new_caseColor.push("#F57F17")
+                        }
+                        else {
+                            new_caseColor.push("#FF0000")
+                        }
+
+                        if (data[i].total_case < 10000) {
+                            total_caseColor.push("#FDEDEC")
+                        }
+                        else if (data[i].total_case >= 10000 && data[i].total_case < 20000) {
+                            total_caseColor.push("#F5B7B1")
+                        }
+                        else if (data[i].total_case >= 20000 && data[i].total_case < 30000) {
+                            total_caseColor.push("#F1948A")
+                        }
+                        else if (data[i].total_case >= 30000 && data[i].total_case < 40000) {
+                            total_caseColor.push("#EC7063")
+                        }
+                        else if (data[i].total_case >= 40000 && data[i].total_case < 50000) {
+                            total_caseColor.push("#E74C3C")
+                        }
+                        else {
+                            total_caseColor.push("#B03A2E")
+                        }
+
+                        if (data[i].total_death == 0) {
+                            total_deathColor.push("#F3E5F5")
+                        }
+                        else if (data[i].total_death >= 1 && data[i].total_death < 200) {
+                            total_deathColor.push("#E1BEE7")
+                        }
+                        else if (data[i].total_death >= 200 && data[i].total_death < 400) {
+                            total_deathColor.push("#CE93D8")
+                        }
+                        else if (data[i].total_death >= 400 && data[i].total_death < 600) {
+                            total_deathColor.push("#BA68C8")
+                        }
+                        else if (data[i].total_death >= 600 && data[i].total_death < 800) {
+                            total_deathColor.push("#9C27B0")
+                        }
+                        else if (data[i].total_death >= 800 && data[i].total_death < 1000) {
+                            total_deathColor.push("#7B1FA2")
+                        }
+                        else {
+                            total_deathColor.push("#511476")
+                        }
+                        
+
+                        // if (i == 1) {
+                        //     province1 = data[i].province;
+                        //     new_case1.innerHTML = data[i].new_case;
+                        //     total_case1.innerHTML = data[i].total_case;
+                        // }
+
+                    }
+                    return data;
+                }
+                // async function getUser2(){
+                //     let response2 = await fetch('https://covid19.ddc.moph.go.th/api/Cases/today-cases-all');
+                //     console.log(response2);
+                //     let data2 = await response2.json();
+                //     data2.forEach(val => {
+                //         new_cases2.innerHTML = val.new_case;
+                //         new_death2.innerHTML = val.new_death;
+                //         total_death2.innerHTML = val.total_death;
+                //         total_cases2.innerHTML = val.total_case;
+                //         total_recovered2.innerHTML = val.total_recovered;
+                //     });
+                //     return data2;
+                // }
+                var menuBarControl1 = new longdo.MenuBar({ button: [
+                    { label: 'new_case', value: 1 },
+                    { label: 'total_case', value: 2 },
+                    { label: 'total_death', value: 3 }
+                ], change: menuChange });
+                function menuChange(toItem, fromItem) {
+                    if (toItem.value == 1){
+                        newcase()
+                    }
+                    else if (toItem.value ==2){
+                        totalcase()
+                    }
+                    else if (toItem.value ==3){
+                        totaldeath()
+                    }
+                }
+                var map
+                function init() {
+                    getUser().then(data => console.log(data));
+                    // getUser2().then(data2 => console.log(data2));
+                    map = new longdo.Map({
+                      placeholder: document.getElementById('map'),
+                      zoom:6,
+                      lastview: false
+                    });
+                    map.Layers.setBase(longdo.Layers.POLITICAL);
+                    map.language('th');
+                    map.zoom(6, true);
+                    map.Ui.add(menuBarControl1);
+                    map.Ui.LayerSelector.visible(false);
+                  }
+                function newcase() {
+                    map.Overlays.clear()
+                    var object1 = new longdo.Overlays.Object('81', 'IG', {
+                        title: detail[0][0],
+                        popup: {
+                            title: detail[0][0],
+                            detail: 'new case : '+detail[0][1] + "<br/>"+'total case : '+detail[0][2] + "<br/>"+'total death : '+detail[0][3]
+                        },
+                        // label: detail[0][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[0]  //สีพื้นหลัง
+                    });
+                    var object2 = new longdo.Overlays.Object('10', 'IG', {
+                        // title: detail[1][0],
+                        popup: {
+                            title: detail[1][0],
+                            detail: 'new case : '+detail[1][1] + "<br/>"+'total case : '+detail[1][2] + "<br/>"+'total death : '+detail[1][3]
+                        },
+                        // label: detail[1][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[1]  //สีพื้นหลัง
+                    });
+                    var object3 = new longdo.Overlays.Object('71', 'IG', {
+                        title: detail[2][0],
+                        popup: {
+                            title: detail[2][0],
+                            detail: 'new case : '+detail[2][1] + "<br/>"+'total case : '+detail[2][2] + "<br/>"+'total death : '+detail[2][3]
+                        },
+                        // label: detail[2][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[2]  //สีพื้นหลัง
+                    });
+                    var object4 = new longdo.Overlays.Object('46', 'IG', {
+                        title: detail[3][0],
+                        popup: {
+                            title: detail[3][0],
+                            detail: 'new case : '+detail[3][1] + "<br/>"+'total case : '+detail[3][2] + "<br/>"+'total death : '+detail[3][3]
+                        },
+                        // label: detail[3][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[3]  //สีพื้นหลัง
+                    });
+                    var object5 = new longdo.Overlays.Object('62', 'IG', {
+                        title: detail[4][0],
+                        popup: {
+                            title: detail[4][0],
+                            detail: 'new case : '+detail[4][1] + "<br/>"+'total case : '+detail[4][2] + "<br/>"+'total death : '+detail[4][3]
+                        },
+                        // label: detail[4][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[4]  //สีพื้นหลัง
+                    });
+                    var object6 = new longdo.Overlays.Object('40', 'IG', {
+                        title: detail[5][0],
+                        popup: {
+                            title: detail[5][0],
+                            detail: 'new case : '+detail[5][1] + "<br/>"+'total case : '+detail[5][2] + "<br/>"+'total death : '+detail[5][3]
+                        },
+                        // label: detail[5][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[5]  //สีพื้นหลัง
+                    });
+                    var object7 = new longdo.Overlays.Object('22', 'IG', {
+                        title: detail[6][0],
+                        popup: {
+                            title: detail[6][0],
+                            detail: 'new case : '+detail[6][1] + "<br/>"+'total case : '+detail[6][2] + "<br/>"+'total death : '+detail[6][3]
+                        },
+                        // label: detail[6][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[6]  //สีพื้นหลัง
+                    });
+                    var object8 = new longdo.Overlays.Object('24', 'IG', {
+                        title: detail[7][0],
+                        popup: {
+                            title: detail[7][0],
+                            detail: 'new case : '+detail[7][1] + "<br/>"+'total case : '+detail[7][2] + "<br/>"+'total death : '+detail[7][3]
+                        },
+                        // label: detail[7][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[7]  //สีพื้นหลัง
+                    });
+                    var object9 = new longdo.Overlays.Object('20', 'IG', {
+                        title: detail[8][0],
+                        popup: {
+                            title: detail[8][0],
+                            detail: 'new case : '+detail[8][1] + "<br/>"+'total case : '+detail[8][2] + "<br/>"+'total death : '+detail[8][3]
+                        },
+                        // label: detail[8][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[8]  //สีพื้นหลัง
+                    });
+                    var object10 = new longdo.Overlays.Object('18', 'IG', {
+                        title: detail[9][0],
+                        popup: {
+                            title: detail[9][0],
+                            detail: 'new case : '+detail[9][1] + "<br/>"+'total case : '+detail[9][2] + "<br/>"+'total death : '+detail[9][3]
+                        },
+                        // label: detail[9][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[9]  //สีพื้นหลัง
+                    });
+                    var object11 = new longdo.Overlays.Object('36', 'IG', {
+                        title: detail[10][0],
+                        popup: {
+                            title: detail[10][0],
+                            detail: 'new case : '+detail[10][1] + "<br/>"+'total case : '+detail[10][2] + "<br/>"+'total death : '+detail[10][3]
+                        },
+                        // label: detail[10][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[10]  //สีพื้นหลัง
+                    });
+                    var object12 = new longdo.Overlays.Object('86', 'IG', {
+                        title: detail[11][0],
+                        popup: {
+                            title: detail[11][0],
+                            detail: 'new case : '+detail[11][1] + "<br/>"+'total case : '+detail[11][2] + "<br/>"+'total death : '+detail[11][3]
+                        },
+                        // label: detail[11][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[11]  //สีพื้นหลัง
+                    });
+                    var object13 = new longdo.Overlays.Object('92', 'IG', {
+                        title: detail[12][0],
+                        popup: {
+                            title: detail[12][0],
+                            detail: 'new case : '+detail[12][1] + "<br/>"+'total case : '+detail[12][2] + "<br/>"+'total death : '+detail[12][3]
+                        },
+                        // label: detail[12][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[12]  //สีพื้นหลัง
+                    });
+                    var object14 = new longdo.Overlays.Object('23', 'IG', {
+                        title: detail[13][0],
+                        popup: {
+                            title: detail[13][0],
+                            detail: 'new case : '+detail[13][1] + "<br/>"+'total case : '+detail[13][2] + "<br/>"+'total death : '+detail[13][3]
+                        },
+                        // label: detail[13][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[13]  //สีพื้นหลัง
+                    });
+                    var object15 = new longdo.Overlays.Object('63', 'IG', {
+                        title: detail[14][0],
+                        popup: {
+                            title: detail[14][0],
+                            detail: 'new case : '+detail[14][1] + "<br/>"+'total case : '+detail[14][2] + "<br/>"+'total death : '+detail[14][3]
+                        },
+                        // label: detail[14][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[14]  //สีพื้นหลัง
+                    });
+                    var object16 = new longdo.Overlays.Object('26', 'IG', {
+                        title: detail[15][0],
+                        popup: {
+                            title: detail[15][0],
+                            detail: 'new case : '+detail[15][1] + "<br/>"+'total case : '+detail[15][2] + "<br/>"+'total death : '+detail[15][3]
+                        },
+                        // label: detail[15][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[15]  //สีพื้นหลัง
+                    });
+                    var object17 = new longdo.Overlays.Object('73', 'IG', {
+                        title: detail[16][0],
+                        popup: {
+                            title: detail[16][0],
+                            detail: 'new case : '+detail[16][1] + "<br/>"+'total case : '+detail[16][2] + "<br/>"+'total death : '+detail[16][3]
+                        },
+                        // label: detail[16][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[16]  //สีพื้นหลัง
+                    });
+                    var object18 = new longdo.Overlays.Object('48', 'IG', {
+                        title: detail[17][0],
+                        popup: {
+                            title: detail[17][0],
+                            detail: 'new case : '+detail[17][1] + "<br/>"+'total case : '+detail[17][2] + "<br/>"+'total death : '+detail[17][3]
+                        },
+                        // label: detail[17][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[17]  //สีพื้นหลัง
+                    });
+                    var object19 = new longdo.Overlays.Object('30', 'IG', {
+                        title: detail[18][0],
+                        popup: {
+                            title: detail[18][0],
+                            detail: 'new case : '+detail[18][1] + "<br/>"+'total case : '+detail[18][2] + "<br/>"+'total death : '+detail[18][3]
+                        },
+                        // label: detail[18][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[18]  //สีพื้นหลัง
+                    });
+                    var object20 = new longdo.Overlays.Object('80', 'IG', {
+                        title: detail[19][0],
+                        popup: {
+                            title: detail[19][0],
+                            detail: 'new case : '+detail[19][1] + "<br/>"+'total case : '+detail[19][2] + "<br/>"+'total death : '+detail[19][3]
+                        },
+                        // label: detail[19][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[19]  //สีพื้นหลัง
+                    });
+                    var object21 = new longdo.Overlays.Object('60', 'IG', {
+                        title: detail[20][0],
+                        popup: {
+                            title: detail[20][0],
+                            detail: 'new case : '+detail[20][1] + "<br/>"+'total case : '+detail[20][2] + "<br/>"+'total death : '+detail[20][3]
+                        },
+                        // label: detail[20][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[20]  //สีพื้นหลัง
+                    });
+                    var object22 = new longdo.Overlays.Object('12', 'IG', {
+                        title: detail[21][0],
+                        popup: {
+                            title: detail[21][0],
+                            detail: 'new case : '+detail[21][1] + "<br/>"+'total case : '+detail[21][2] + "<br/>"+'total death : '+detail[21][3]
+                        },
+                        // label: detail[21][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[21]  //สีพื้นหลัง
+                    });
+                    var object23 = new longdo.Overlays.Object('96', 'IG', {
+                        title: detail[22][0],
+                        popup: {
+                            title: detail[22][0],
+                            detail: 'new case : '+detail[22][1] + "<br/>"+'total case : '+detail[22][2] + "<br/>"+'total death : '+detail[22][3]
+                        },
+                        // label: detail[22][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[22]  //สีพื้นหลัง
+                    });
+                    var object24 = new longdo.Overlays.Object('55', 'IG', {
+                        title: detail[23][0],
+                        popup: {
+                            title: detail[23][0],
+                            detail: 'new case : '+detail[23][1] + "<br/>"+'total case : '+detail[23][2] + "<br/>"+'total death : '+detail[23][3]
+                        },
+                        // label: detail[23][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[23]  //สีพื้นหลัง
+                    });
+                    var object25 = new longdo.Overlays.Object('38', 'IG', {
+                        title: detail[24][0],
+                        popup: {
+                            title: detail[24][0],
+                            detail: 'new case : '+detail[24][1] + "<br/>"+'total case : '+detail[24][2] + "<br/>"+'total death : '+detail[24][3]
+                        },
+                        // label: detail[24][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[24]  //สีพื้นหลัง
+                    });
+                    var object26 = new longdo.Overlays.Object('31', 'IG', {
+                        title: detail[25][0],
+                        popup: {
+                            title: detail[25][0],
+                            detail: 'new case : '+detail[25][1] + "<br/>"+'total case : '+detail[25][2] + "<br/>"+'total death : '+detail[25][3]
+                        },
+                        // label: detail[25][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[25]  //สีพื้นหลัง
+                    });
+                    var object27 = new longdo.Overlays.Object('13', 'IG', {
+                        title: detail[26][0],
+                        popup: {
+                            title: detail[26][0],
+                            detail: 'new case : '+detail[26][1] + "<br/>"+'total case : '+detail[26][2] + "<br/>"+'total death : '+detail[26][3]
+                        },
+                        // label: detail[26][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[26]  //สีพื้นหลัง
+                    });
+                    var object28 = new longdo.Overlays.Object('77', 'IG', {
+                        title: detail[27][0],
+                        popup: {
+                            title: detail[27][0],
+                            detail: 'new case : '+detail[27][1] + "<br/>"+'total case : '+detail[27][2] + "<br/>"+'total death : '+detail[27][3]
+                        },
+                        // label: detail[27][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[27]  //สีพื้นหลัง
+                    });
+                    var object29 = new longdo.Overlays.Object('25', 'IG', {
+                        title: detail[28][0],
+                        popup: {
+                            title: detail[28][0],
+                            detail: 'new case : '+detail[28][1] + "<br/>"+'total case : '+detail[28][2] + "<br/>"+'total death : '+detail[28][3]
+                        },
+                        // label: detail[28][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[28]  //สีพื้นหลัง
+                    });
+                    var object30 = new longdo.Overlays.Object('94', 'IG', {
+                        title: detail[29][0],
+                        popup: {
+                            title: detail[29][0],
+                            detail: 'new case : '+detail[29][1] + "<br/>"+'total case : '+detail[29][2] + "<br/>"+'total death : '+detail[29][3]
+                        },
+                        // label: detail[29][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[29]  //สีพื้นหลัง
+                    });
+                    var object31 = new longdo.Overlays.Object('14', 'IG', {
+                        title: detail[30][0],
+                        popup: {
+                            title: detail[30][0],
+                            detail: 'new case : '+detail[30][1] + "<br/>"+'total case : '+detail[30][2] + "<br/>"+'total death : '+detail[30][3]
+                        },
+                        // label: detail[30][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[30]  //สีพื้นหลัง
+                    });
+                    var object32 = new longdo.Overlays.Object('56', 'IG', {
+                        title: detail[31][0],
+                        popup: {
+                            title: detail[31][0],
+                            detail: 'new case : '+detail[31][1] + "<br/>"+'total case : '+detail[31][2] + "<br/>"+'total death : '+detail[31][3]
+                        },
+                        // label: detail[31][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[31]  //สีพื้นหลัง
+                    });
+                    var object33 = new longdo.Overlays.Object('82', 'IG', {
+                        title: detail[32][0],
+                        popup: {
+                            title: detail[32][0],
+                            detail: 'new case : '+detail[32][1] + "<br/>"+'total case : '+detail[32][2] + "<br/>"+'total death : '+detail[32][3]
+                        },
+                        // label: detail[32][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[32]  //สีพื้นหลัง
+                    });
+                    var object34 = new longdo.Overlays.Object('93', 'IG', {
+                        title: detail[33][0],
+                        popup: {
+                            title: detail[33][0],
+                            detail: 'new case : '+detail[33][1] + "<br/>"+'total case : '+detail[33][2] + "<br/>"+'total death : '+detail[33][3]
+                        },
+                        // label: detail[33][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[33]  //สีพื้นหลัง
+                    });
+                    var object35 = new longdo.Overlays.Object('66', 'IG', {
+                        title: detail[34][0],
+                        popup: {
+                            title: detail[34][0],
+                            detail: 'new case : '+detail[34][1] + "<br/>"+'total case : '+detail[34][2] + "<br/>"+'total death : '+detail[34][3]
+                        },
+                        // label: detail[34][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[34]  //สีพื้นหลัง
+                    });
+                    var object36 = new longdo.Overlays.Object('65', 'IG', {
+                        title: detail[35][0],
+                        popup: {
+                            title: detail[35][0],
+                            detail: 'new case : '+detail[35][1] + "<br/>"+'total case : '+detail[35][2] + "<br/>"+'total death : '+detail[35][3]
+                        },
+                        // label: detail[35][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[35]  //สีพื้นหลัง
+                    });
+                    var object37 = new longdo.Overlays.Object('83', 'IG', {
+                        title: detail[36][0],
+                        popup: {
+                            title: detail[36][0],
+                            detail: 'new case : '+detail[36][1] + "<br/>"+'total case : '+detail[36][2] + "<br/>"+'total death : '+detail[36][3]
+                        },
+                        // label: detail[36][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[36]  //สีพื้นหลัง
+                    });
+                    var object38 = new longdo.Overlays.Object('44', 'IG', {
+                        title: detail[37][0],
+                        popup: {
+                            title: detail[37][0],
+                            detail: 'new case : '+detail[37][1] + "<br/>"+'total case : '+detail[37][2] + "<br/>"+'total death : '+detail[37][3]
+                        },
+                        // label: detail[37][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[37]  //สีพื้นหลัง
+                    });
+                    var object39 = new longdo.Overlays.Object('49', 'IG', {
+                        title: detail[38][0],
+                        popup: {
+                            title: detail[38][0],
+                            detail: 'new case : '+detail[38][1] + "<br/>"+'total case : '+detail[38][2] + "<br/>"+'total death : '+detail[38][3]
+                        },
+                        // label: detail[38][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[38]  //สีพื้นหลัง
+                    });
+                    var object40 = new longdo.Overlays.Object('95', 'IG', {
+                        title: detail[39][0],
+                        popup: {
+                            title: detail[39][0],
+                            detail: 'new case : '+detail[39][1] + "<br/>"+'total case : '+detail[39][2] + "<br/>"+'total death : '+detail[39][3]
+                        },
+                        // label: detail[39][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[39]  //สีพื้นหลัง
+                    });
+                    var object41 = new longdo.Overlays.Object('35', 'IG', {
+                        title: detail[40][0],
+                        popup: {
+                            title: detail[40][0],
+                            detail: 'new case : '+detail[40][1] + "<br/>"+'total case : '+detail[40][2] + "<br/>"+'total death : '+detail[40][3]
+                        },
+                        // label: detail[40][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[40]  //สีพื้นหลัง
+                    });
+                    var object42 = new longdo.Overlays.Object('45', 'IG', {
+                        title: detail[41][0],
+                        popup: {
+                            title: detail[41][0],
+                            detail: 'new case : '+detail[41][1] + "<br/>"+'total case : '+detail[41][2] + "<br/>"+'total death : '+detail[41][3]
+                        },
+                        // label: detail[41][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[41]  //สีพื้นหลัง
+                    });
+                    var object43 = new longdo.Overlays.Object('85', 'IG', {
+                        title: detail[42][0],
+                        popup: {
+                            title: detail[42][0],
+                            detail: 'new case : '+detail[42][1] + "<br/>"+'total case : '+detail[42][2] + "<br/>"+'total death : '+detail[42][3]
+                        },
+                        // label: detail[42][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[42]  //สีพื้นหลัง
+                    });
+                    var object44 = new longdo.Overlays.Object('21', 'IG', {
+                        title: detail[43][0],
+                        popup: {
+                            title: detail[43][0],
+                            detail: 'new case : '+detail[43][1] + "<br/>"+'total case : '+detail[43][2] + "<br/>"+'total death : '+detail[43][3]
+                        },
+                        // label: detail[43][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[43]  //สีพื้นหลัง
+                    });
+                    var object45 = new longdo.Overlays.Object('70', 'IG', {
+                        title: detail[44][0],
+                        popup: {
+                            title: detail[44][0],
+                            detail: 'new case : '+detail[44][1] + "<br/>"+'total case : '+detail[44][2] + "<br/>"+'total death : '+detail[44][3]
+                        },
+                        // label: detail[44][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[44]  //สีพื้นหลัง
+                    });
+                    var object46 = new longdo.Overlays.Object('16', 'IG', {
+                        title: detail[45][0],
+                        popup: {
+                            title: detail[45][0],
+                            detail: 'new case : '+detail[45][1] + "<br/>"+'total case : '+detail[45][2] + "<br/>"+'total death : '+detail[45][3]
+                        },
+                        // label: detail[45][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[45]  //สีพื้นหลัง
+                    });
+                    var object47 = new longdo.Overlays.Object('52', 'IG', {
+                        title: detail[46][0],
+                        popup: {
+                            title: detail[46][0],
+                            detail: 'new case : '+detail[46][1] + "<br/>"+'total case : '+detail[46][2] + "<br/>"+'total death : '+detail[46][3]
+                        },
+                        // label: detail[46][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[46]  //สีพื้นหลัง
+                    });
+                    var object48 = new longdo.Overlays.Object('51', 'IG', {
+                        title: detail[47][0],
+                        popup: {
+                            title: detail[47][0],
+                            detail: 'new case : '+detail[47][1] + "<br/>"+'total case : '+detail[47][2] + "<br/>"+'total death : '+detail[47][3]
+                        },
+                        // label: detail[47][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[47]  //สีพื้นหลัง
+                    });
+                    var object49 = new longdo.Overlays.Object('33', 'IG', {
+                        title: detail[48][0],
+                        popup: {
+                            title: detail[48][0],
+                            detail: 'new case : '+detail[48][1] + "<br/>"+'total case : '+detail[48][2] + "<br/>"+'total death : '+detail[48][3]
+                        },
+                        // label: detail[48][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[48]  //สีพื้นหลัง
+                    });
+                    var object50 = new longdo.Overlays.Object('47', 'IG', {
+                        title: detail[49][0],
+                        popup: {
+                            title: detail[49][0],
+                            detail: 'new case : '+detail[49][1] + "<br/>"+'total case : '+detail[49][2] + "<br/>"+'total death : '+detail[49][3]
+                        },
+                        // label: detail[49][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[49]  //สีพื้นหลัง
+                    });
+                    var object51 = new longdo.Overlays.Object('90', 'IG', {
+                        title: detail[50][0],
+                        popup: {
+                            title: detail[50][0],
+                            detail: 'new case : '+detail[50][1] + "<br/>"+'total case : '+detail[50][2] + "<br/>"+'total death : '+detail[50][3]
+                        },
+                        // label: detail[50][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[50]  //สีพื้นหลัง
+                    });
+                    var object52 = new longdo.Overlays.Object('91', 'IG', {
+                        title: detail[51][0],
+                        popup: {
+                            title: detail[51][0],
+                            detail: 'new case : '+detail[51][1] + "<br/>"+'total case : '+detail[51][2] + "<br/>"+'total death : '+detail[51][3]
+                        },
+                        // label: detail[51][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[51]  //สีพื้นหลัง
+                    });
+                    var object53 = new longdo.Overlays.Object('11', 'IG', {
+                        title: detail[52][0],
+                        popup: {
+                            title: detail[52][0],
+                            detail: 'new case : '+detail[52][1] + "<br/>"+'total case : '+detail[52][2] + "<br/>"+'total death : '+detail[52][3]
+                        },
+                        // label: detail[52][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[52]  //สีพื้นหลัง
+                    });
+                    var object54 = new longdo.Overlays.Object('75', 'IG', {
+                        title: detail[53][0],
+                        popup: {
+                            title: detail[53][0],
+                            detail: 'new case : '+detail[53][1] + "<br/>"+'total case : '+detail[53][2] + "<br/>"+'total death : '+detail[53][3]
+                        },
+                        // label: detail[53][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[53]  //สีพื้นหลัง
+                    });
+                    var object55 = new longdo.Overlays.Object('74', 'IG', {
+                        title: detail[54][0],
+                        popup: {
+                            title: detail[54][0],
+                            detail: 'new case : '+detail[54][1] + "<br/>"+'total case : '+detail[54][2] + "<br/>"+'total death : '+detail[54][3]
+                        },
+                        // label: detail[54][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[54]  //สีพื้นหลัง
+                    });
+                    var object56 = new longdo.Overlays.Object('19', 'IG', {
+                        title: detail[55][0],
+                        popup: {
+                            title: detail[55][0],
+                            detail: 'new case : '+detail[55][1] + "<br/>"+'total case : '+detail[55][2] + "<br/>"+'total death : '+detail[55][3]
+                        },
+                        // label: detail[55][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[55]  //สีพื้นหลัง
+                    });
+                    var object57 = new longdo.Overlays.Object('27', 'IG', {
+                        title: detail[56][0],
+                        popup: {
+                            title: detail[56][0],
+                            detail: 'new case : '+detail[56][1] + "<br/>"+'total case : '+detail[56][2] + "<br/>"+'total death : '+detail[56][3]
+                        },
+                        // label: detail[56][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[56]  //สีพื้นหลัง
+                    });
+                    var object58 = new longdo.Overlays.Object('17', 'IG', {
+                        title: detail[57][0],
+                        popup: {
+                            title: detail[57][0],
+                            detail: 'new case : '+detail[57][1] + "<br/>"+'total case : '+detail[57][2] + "<br/>"+'total death : '+detail[57][3]
+                        },
+                        // label: detail[57][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[57]  //สีพื้นหลัง
+                    });
+                    var object59 = new longdo.Overlays.Object('72', 'IG', {
+                        title: detail[58][0],
+                        popup: {
+                            title: detail[58][0],
+                            detail: 'new case : '+detail[58][1] + "<br/>"+'total case : '+detail[58][2] + "<br/>"+'total death : '+detail[58][3]
+                        },
+                        // label: detail[58][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[58]  //สีพื้นหลัง
+                    });
+                    var object60 = new longdo.Overlays.Object('84', 'IG', {
+                        title: detail[59][0],
+                        popup: {
+                            title: detail[59][0],
+                            detail: 'new case : '+detail[59][1] + "<br/>"+'total case : '+detail[59][2] + "<br/>"+'total death : '+detail[59][3]
+                        },
+                        // label: detail[59][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[59]  //สีพื้นหลัง
+                    });
+                    var object61 = new longdo.Overlays.Object('32', 'IG', {
+                        title: detail[60][0],
+                        popup: {
+                            title: detail[60][0],
+                            detail: 'new case : '+detail[60][1] + "<br/>"+'total case : '+detail[60][2] + "<br/>"+'total death : '+detail[60][3]
+                        },
+                        // label: detail[60][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[60]  //สีพื้นหลัง
+                    });
+                    var object62 = new longdo.Overlays.Object('64', 'IG', {
+                        title: detail[61][0],
+                        popup: {
+                            title: detail[61][0],
+                            detail: 'new case : '+detail[61][1] + "<br/>"+'total case : '+detail[61][2] + "<br/>"+'total death : '+detail[61][3]
+                        },
+                        // label: detail[61][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[61]  //สีพื้นหลัง
+                    });
+                    var object63 = new longdo.Overlays.Object('43', 'IG', {
+                        title: detail[62][0],
+                        popup: {
+                            title: detail[62][0],
+                            detail: 'new case : '+detail[62][1] + "<br/>"+'total case : '+detail[62][2] + "<br/>"+'total death : '+detail[62][3]
+                        },
+                        // label: detail[62][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[62]  //สีพื้นหลัง
+                    });
+                    var object64 = new longdo.Overlays.Object('39', 'IG', {
+                        title: detail[63][0],
+                        popup: {
+                            title: detail[63][0],
+                            detail: 'new case : '+detail[63][1] + "<br/>"+'total case : '+detail[63][2] + "<br/>"+'total death : '+detail[63][3]
+                        },
+                        // label: detail[63][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[63]  //สีพื้นหลัง
+                    });
+                    var object65 = new longdo.Overlays.Object('15', 'IG', {
+                        title: detail[64][0],
+                        popup: {
+                            title: detail[64][0],
+                            detail: 'new case : '+detail[64][1] + "<br/>"+'total case : '+detail[64][2] + "<br/>"+'total death : '+detail[64][3]
+                        },
+                        // label: detail[64][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[64]  //สีพื้นหลัง
+                    });
+                    var object66 = new longdo.Overlays.Object('37', 'IG', {
+                        title: detail[65][0],
+                        popup: {
+                            title: detail[65][0],
+                            detail: 'new case : '+detail[65][1] + "<br/>"+'total case : '+detail[65][2] + "<br/>"+'total death : '+detail[65][3]
+                        },
+                        // label: detail[65][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[65]  //สีพื้นหลัง
+                    });
+                    var object67 = new longdo.Overlays.Object('41', 'IG', {
+                        title: detail[66][0],
+                        popup: {
+                            title: detail[66][0],
+                            detail: 'new case : '+detail[66][1] + "<br/>"+'total case : '+detail[66][2] + "<br/>"+'total death : '+detail[66][3]
+                        },
+                        // label: detail[66][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[66]  //สีพื้นหลัง
+                    });
+                    var object68 = new longdo.Overlays.Object('53', 'IG', {
+                        title: detail[67][0],
+                        popup: {
+                            title: detail[67][0],
+                            detail: 'new case : '+detail[67][1] + "<br/>"+'total case : '+detail[67][2] + "<br/>"+'total death : '+detail[67][3]
+                        },
+                        // label: detail[67][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[67]  //สีพื้นหลัง
+                    });
+                    var object69 = new longdo.Overlays.Object('61', 'IG', {
+                        title: detail[68][0],
+                        popup: {
+                            title: detail[68][0],
+                            detail: 'new case : '+detail[68][1] + "<br/>"+'total case : '+detail[68][2] + "<br/>"+'total death : '+detail[68][3]
+                        },
+                        // label: detail[68][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[68]  //สีพื้นหลัง
+                    });
+                    var object70 = new longdo.Overlays.Object('34', 'IG', {
+                        title: detail[69][0],
+                        popup: {
+                            title: detail[69][0],
+                            detail: 'new case : '+detail[69][1] + "<br/>"+'total case : '+detail[69][2] + "<br/>"+'total death : '+detail[69][3]
+                        },
+                        // label: detail[69][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[69]  //สีพื้นหลัง
+                    });
+                    var object71 = new longdo.Overlays.Object('57', 'IG', {
+                        title: detail[70][0],
+                        popup: {
+                            title: detail[70][0],
+                            detail: 'new case : '+detail[70][1] + "<br/>"+'total case : '+detail[70][2] + "<br/>"+'total death : '+detail[70][3]
+                        },
+                        // label: detail[70][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[70]  //สีพื้นหลัง
+                    });
+                    var object72 = new longdo.Overlays.Object('50', 'IG', {
+                        title: detail[71][0],
+                        popup: {
+                            title: detail[71][0],
+                            detail: 'new case : '+detail[71][1] + "<br/>"+'total case : '+detail[71][2] + "<br/>"+'total death : '+detail[71][3]
+                        },
+                        // label: detail[71][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[71]  //สีพื้นหลัง
+                    });
+                    var object73 = new longdo.Overlays.Object('76', 'IG', {
+                        title: detail[72][0],
+                        popup: {
+                            title: detail[72][0],
+                            detail: 'new case : '+detail[72][1] + "<br/>"+'total case : '+detail[72][2] + "<br/>"+'total death : '+detail[72][3]
+                        },
+                        // label: detail[72][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[72]  //สีพื้นหลัง
+                    });
+                    var object74 = new longdo.Overlays.Object('67', 'IG', {
+                        title: detail[73][0],
+                        popup: {
+                            title: detail[73][0],
+                            detail: 'new case : '+detail[73][1] + "<br/>"+'total case : '+detail[73][2] + "<br/>"+'total death : '+detail[73][3]
+                        },
+                        // label: detail[73][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[73]  //สีพื้นหลัง
+                    });
+                    var object75 = new longdo.Overlays.Object('42', 'IG', {
+                        title: detail[74][0],
+                        popup: {
+                            title: detail[74][0],
+                            detail: 'new case : '+detail[74][1] + "<br/>"+'total case : '+detail[74][2] + "<br/>"+'total death : '+detail[74][3]
+                        },
+                        // label: detail[74][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[74]  //สีพื้นหลัง
+                    });
+                    var object76 = new longdo.Overlays.Object('54', 'IG', {
+                        title: detail[75][0],
+                        popup: {
+                            title: detail[75][0],
+                            detail: 'new case : '+detail[75][1] + "<br/>"+'total case : '+detail[75][2] + "<br/>"+'total death : '+detail[75][3]
+                        },
+                        // label: detail[75][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[75]  //สีพื้นหลัง
+                    });
+                    var object77 = new longdo.Overlays.Object('58', 'IG', {
+                        title: detail[76][0],
+                        popup: {
+                            title: detail[76][0],
+                            detail: 'new case : '+detail[76][1] + "<br/>"+'total case : '+detail[76][2] + "<br/>"+'total death : '+detail[76][3]
+                        },
+                        // label: detail[76][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: new_caseColor[76]  //สีพื้นหลัง
+                    });
+                    map.Overlays.load(object1);
+                    map.Overlays.load(object2);
+                    map.Overlays.load(object3);
+                    map.Overlays.load(object4);
+                    map.Overlays.load(object5);
+                    map.Overlays.load(object6);
+                    map.Overlays.load(object7);
+                    map.Overlays.load(object8);
+                    map.Overlays.load(object9);
+                    map.Overlays.load(object10);
+                    map.Overlays.load(object11);
+                    map.Overlays.load(object12);
+                    map.Overlays.load(object13);
+                    map.Overlays.load(object14);
+                    map.Overlays.load(object15);
+                    map.Overlays.load(object16);
+                    map.Overlays.load(object17);
+                    map.Overlays.load(object18);
+                    map.Overlays.load(object19);
+                    map.Overlays.load(object20);
+                    map.Overlays.load(object21);
+                    map.Overlays.load(object22);
+                    map.Overlays.load(object23);
+                    map.Overlays.load(object24);
+                    map.Overlays.load(object25);
+                    map.Overlays.load(object26);
+                    map.Overlays.load(object27);
+                    map.Overlays.load(object28);
+                    map.Overlays.load(object29);
+                    map.Overlays.load(object30);
+                    map.Overlays.load(object31);
+                    map.Overlays.load(object32);
+                    map.Overlays.load(object33);
+                    map.Overlays.load(object34);
+                    map.Overlays.load(object35);
+                    map.Overlays.load(object36);
+                    map.Overlays.load(object37);
+                    map.Overlays.load(object38);
+                    map.Overlays.load(object39);
+                    map.Overlays.load(object40);
+                    map.Overlays.load(object41);
+                    map.Overlays.load(object42);
+                    map.Overlays.load(object43);
+                    map.Overlays.load(object44);
+                    map.Overlays.load(object45);
+                    map.Overlays.load(object46);
+                    map.Overlays.load(object47);
+                    map.Overlays.load(object48);
+                    map.Overlays.load(object49);
+                    map.Overlays.load(object50);
+                    map.Overlays.load(object51);
+                    map.Overlays.load(object52);
+                    map.Overlays.load(object53);
+                    map.Overlays.load(object54);
+                    map.Overlays.load(object55);
+                    map.Overlays.load(object56);
+                    map.Overlays.load(object57);
+                    map.Overlays.load(object58);
+                    map.Overlays.load(object59);
+                    map.Overlays.load(object60);
+                    map.Overlays.load(object61);
+                    map.Overlays.load(object62);
+                    map.Overlays.load(object63);
+                    map.Overlays.load(object64);
+                    map.Overlays.load(object65);
+                    map.Overlays.load(object66);
+                    map.Overlays.load(object67);
+                    map.Overlays.load(object68);
+                    map.Overlays.load(object69);
+                    map.Overlays.load(object70);
+                    map.Overlays.load(object71);
+                    map.Overlays.load(object72);
+                    map.Overlays.load(object73);
+                    map.Overlays.load(object74);
+                    map.Overlays.load(object75);
+                    map.Overlays.load(object76);
+                    map.Overlays.load(object77);
+                }
+                function totalcase() {
+                    map.Overlays.clear()
+                    var object1 = new longdo.Overlays.Object('81', 'IG', {
+                        title: detail[0][0],
+                        popup: {
+                            title: detail[0][0],
+                            detail: 'new case : '+detail[0][1] + "<br/>"+'total case : '+detail[0][2] + "<br/>"+'total death : '+detail[0][3]
+                        },
+                        // label: detail[0][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[0]  //สีพื้นหลัง
+                    });
+                    var object2 = new longdo.Overlays.Object('10', 'IG', {
+                        // title: detail[1][0],
+                        popup: {
+                            title: detail[1][0],
+                            detail: 'new case : '+detail[1][1] + "<br/>"+'total case : '+detail[1][2] + "<br/>"+'total death : '+detail[1][3]
+                        },
+                        // label: detail[1][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[1]  //สีพื้นหลัง
+                    });
+                    var object3 = new longdo.Overlays.Object('71', 'IG', {
+                        title: detail[2][0],
+                        popup: {
+                            title: detail[2][0],
+                            detail: 'new case : '+detail[2][1] + "<br/>"+'total case : '+detail[2][2] + "<br/>"+'total death : '+detail[2][3]
+                        },
+                        // label: detail[2][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[2]  //สีพื้นหลัง
+                    });
+                    var object4 = new longdo.Overlays.Object('46', 'IG', {
+                        title: detail[3][0],
+                        popup: {
+                            title: detail[3][0],
+                            detail: 'new case : '+detail[3][1] + "<br/>"+'total case : '+detail[3][2] + "<br/>"+'total death : '+detail[3][3]
+                        },
+                        // label: detail[3][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[3]  //สีพื้นหลัง
+                    });
+                    var object5 = new longdo.Overlays.Object('62', 'IG', {
+                        title: detail[4][0],
+                        popup: {
+                            title: detail[4][0],
+                            detail: 'new case : '+detail[4][1] + "<br/>"+'total case : '+detail[4][2] + "<br/>"+'total death : '+detail[4][3]
+                        },
+                        // label: detail[4][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[4]  //สีพื้นหลัง
+                    });
+                    var object6 = new longdo.Overlays.Object('40', 'IG', {
+                        title: detail[5][0],
+                        popup: {
+                            title: detail[5][0],
+                            detail: 'new case : '+detail[5][1] + "<br/>"+'total case : '+detail[5][2] + "<br/>"+'total death : '+detail[5][3]
+                        },
+                        // label: detail[5][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[5]  //สีพื้นหลัง
+                    });
+                    var object7 = new longdo.Overlays.Object('22', 'IG', {
+                        title: detail[6][0],
+                        popup: {
+                            title: detail[6][0],
+                            detail: 'new case : '+detail[6][1] + "<br/>"+'total case : '+detail[6][2] + "<br/>"+'total death : '+detail[6][3]
+                        },
+                        // label: detail[6][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[6]  //สีพื้นหลัง
+                    });
+                    var object8 = new longdo.Overlays.Object('24', 'IG', {
+                        title: detail[7][0],
+                        popup: {
+                            title: detail[7][0],
+                            detail: 'new case : '+detail[7][1] + "<br/>"+'total case : '+detail[7][2] + "<br/>"+'total death : '+detail[7][3]
+                        },
+                        // label: detail[7][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[7]  //สีพื้นหลัง
+                    });
+                    var object9 = new longdo.Overlays.Object('20', 'IG', {
+                        title: detail[8][0],
+                        popup: {
+                            title: detail[8][0],
+                            detail: 'new case : '+detail[8][1] + "<br/>"+'total case : '+detail[8][2] + "<br/>"+'total death : '+detail[8][3]
+                        },
+                        // label: detail[8][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[8]  //สีพื้นหลัง
+                    });
+                    var object10 = new longdo.Overlays.Object('18', 'IG', {
+                        title: detail[9][0],
+                        popup: {
+                            title: detail[9][0],
+                            detail: 'new case : '+detail[9][1] + "<br/>"+'total case : '+detail[9][2] + "<br/>"+'total death : '+detail[9][3]
+                        },
+                        // label: detail[9][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[9]  //สีพื้นหลัง
+                    });
+                    var object11 = new longdo.Overlays.Object('36', 'IG', {
+                        title: detail[10][0],
+                        popup: {
+                            title: detail[10][0],
+                            detail: 'new case : '+detail[10][1] + "<br/>"+'total case : '+detail[10][2] + "<br/>"+'total death : '+detail[10][3]
+                        },
+                        // label: detail[10][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[10]  //สีพื้นหลัง
+                    });
+                    var object12 = new longdo.Overlays.Object('86', 'IG', {
+                        title: detail[11][0],
+                        popup: {
+                            title: detail[11][0],
+                            detail: 'new case : '+detail[11][1] + "<br/>"+'total case : '+detail[11][2] + "<br/>"+'total death : '+detail[11][3]
+                        },
+                        // label: detail[11][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[11]  //สีพื้นหลัง
+                    });
+                    var object13 = new longdo.Overlays.Object('92', 'IG', {
+                        title: detail[12][0],
+                        popup: {
+                            title: detail[12][0],
+                            detail: 'new case : '+detail[12][1] + "<br/>"+'total case : '+detail[12][2] + "<br/>"+'total death : '+detail[12][3]
+                        },
+                        // label: detail[12][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[12]  //สีพื้นหลัง
+                    });
+                    var object14 = new longdo.Overlays.Object('23', 'IG', {
+                        title: detail[13][0],
+                        popup: {
+                            title: detail[13][0],
+                            detail: 'new case : '+detail[13][1] + "<br/>"+'total case : '+detail[13][2] + "<br/>"+'total death : '+detail[13][3]
+                        },
+                        // label: detail[13][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[13]  //สีพื้นหลัง
+                    });
+                    var object15 = new longdo.Overlays.Object('63', 'IG', {
+                        title: detail[14][0],
+                        popup: {
+                            title: detail[14][0],
+                            detail: 'new case : '+detail[14][1] + "<br/>"+'total case : '+detail[14][2] + "<br/>"+'total death : '+detail[14][3]
+                        },
+                        // label: detail[14][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[14]  //สีพื้นหลัง
+                    });
+                    var object16 = new longdo.Overlays.Object('26', 'IG', {
+                        title: detail[15][0],
+                        popup: {
+                            title: detail[15][0],
+                            detail: 'new case : '+detail[15][1] + "<br/>"+'total case : '+detail[15][2] + "<br/>"+'total death : '+detail[15][3]
+                        },
+                        // label: detail[15][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[15]  //สีพื้นหลัง
+                    });
+                    var object17 = new longdo.Overlays.Object('73', 'IG', {
+                        title: detail[16][0],
+                        popup: {
+                            title: detail[16][0],
+                            detail: 'new case : '+detail[16][1] + "<br/>"+'total case : '+detail[16][2] + "<br/>"+'total death : '+detail[16][3]
+                        },
+                        // label: detail[16][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[16]  //สีพื้นหลัง
+                    });
+                    var object18 = new longdo.Overlays.Object('48', 'IG', {
+                        title: detail[17][0],
+                        popup: {
+                            title: detail[17][0],
+                            detail: 'new case : '+detail[17][1] + "<br/>"+'total case : '+detail[17][2] + "<br/>"+'total death : '+detail[17][3]
+                        },
+                        // label: detail[17][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[17]  //สีพื้นหลัง
+                    });
+                    var object19 = new longdo.Overlays.Object('30', 'IG', {
+                        title: detail[18][0],
+                        popup: {
+                            title: detail[18][0],
+                            detail: 'new case : '+detail[18][1] + "<br/>"+'total case : '+detail[18][2] + "<br/>"+'total death : '+detail[18][3]
+                        },
+                        // label: detail[18][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[18]  //สีพื้นหลัง
+                    });
+                    var object20 = new longdo.Overlays.Object('80', 'IG', {
+                        title: detail[19][0],
+                        popup: {
+                            title: detail[19][0],
+                            detail: 'new case : '+detail[19][1] + "<br/>"+'total case : '+detail[19][2] + "<br/>"+'total death : '+detail[19][3]
+                        },
+                        // label: detail[19][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[19]  //สีพื้นหลัง
+                    });
+                    var object21 = new longdo.Overlays.Object('60', 'IG', {
+                        title: detail[20][0],
+                        popup: {
+                            title: detail[20][0],
+                            detail: 'new case : '+detail[20][1] + "<br/>"+'total case : '+detail[20][2] + "<br/>"+'total death : '+detail[20][3]
+                        },
+                        // label: detail[20][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[20]  //สีพื้นหลัง
+                    });
+                    var object22 = new longdo.Overlays.Object('12', 'IG', {
+                        title: detail[21][0],
+                        popup: {
+                            title: detail[21][0],
+                            detail: 'new case : '+detail[21][1] + "<br/>"+'total case : '+detail[21][2] + "<br/>"+'total death : '+detail[21][3]
+                        },
+                        // label: detail[21][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[21]  //สีพื้นหลัง
+                    });
+                    var object23 = new longdo.Overlays.Object('96', 'IG', {
+                        title: detail[22][0],
+                        popup: {
+                            title: detail[22][0],
+                            detail: 'new case : '+detail[22][1] + "<br/>"+'total case : '+detail[22][2] + "<br/>"+'total death : '+detail[22][3]
+                        },
+                        // label: detail[22][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[22]  //สีพื้นหลัง
+                    });
+                    var object24 = new longdo.Overlays.Object('55', 'IG', {
+                        title: detail[23][0],
+                        popup: {
+                            title: detail[23][0],
+                            detail: 'new case : '+detail[23][1] + "<br/>"+'total case : '+detail[23][2] + "<br/>"+'total death : '+detail[23][3]
+                        },
+                        // label: detail[23][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[23]  //สีพื้นหลัง
+                    });
+                    var object25 = new longdo.Overlays.Object('38', 'IG', {
+                        title: detail[24][0],
+                        popup: {
+                            title: detail[24][0],
+                            detail: 'new case : '+detail[24][1] + "<br/>"+'total case : '+detail[24][2] + "<br/>"+'total death : '+detail[24][3]
+                        },
+                        // label: detail[24][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[24]  //สีพื้นหลัง
+                    });
+                    var object26 = new longdo.Overlays.Object('31', 'IG', {
+                        title: detail[25][0],
+                        popup: {
+                            title: detail[25][0],
+                            detail: 'new case : '+detail[25][1] + "<br/>"+'total case : '+detail[25][2] + "<br/>"+'total death : '+detail[25][3]
+                        },
+                        // label: detail[25][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[25]  //สีพื้นหลัง
+                    });
+                    var object27 = new longdo.Overlays.Object('13', 'IG', {
+                        title: detail[26][0],
+                        popup: {
+                            title: detail[26][0],
+                            detail: 'new case : '+detail[26][1] + "<br/>"+'total case : '+detail[26][2] + "<br/>"+'total death : '+detail[26][3]
+                        },
+                        // label: detail[26][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[26]  //สีพื้นหลัง
+                    });
+                    var object28 = new longdo.Overlays.Object('77', 'IG', {
+                        title: detail[27][0],
+                        popup: {
+                            title: detail[27][0],
+                            detail: 'new case : '+detail[27][1] + "<br/>"+'total case : '+detail[27][2] + "<br/>"+'total death : '+detail[27][3]
+                        },
+                        // label: detail[27][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[27]  //สีพื้นหลัง
+                    });
+                    var object29 = new longdo.Overlays.Object('25', 'IG', {
+                        title: detail[28][0],
+                        popup: {
+                            title: detail[28][0],
+                            detail: 'new case : '+detail[28][1] + "<br/>"+'total case : '+detail[28][2] + "<br/>"+'total death : '+detail[28][3]
+                        },
+                        // label: detail[28][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[28]  //สีพื้นหลัง
+                    });
+                    var object30 = new longdo.Overlays.Object('94', 'IG', {
+                        title: detail[29][0],
+                        popup: {
+                            title: detail[29][0],
+                            detail: 'new case : '+detail[29][1] + "<br/>"+'total case : '+detail[29][2] + "<br/>"+'total death : '+detail[29][3]
+                        },
+                        // label: detail[29][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[29]  //สีพื้นหลัง
+                    });
+                    var object31 = new longdo.Overlays.Object('14', 'IG', {
+                        title: detail[30][0],
+                        popup: {
+                            title: detail[30][0],
+                            detail: 'new case : '+detail[30][1] + "<br/>"+'total case : '+detail[30][2] + "<br/>"+'total death : '+detail[30][3]
+                        },
+                        // label: detail[30][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[30]  //สีพื้นหลัง
+                    });
+                    var object32 = new longdo.Overlays.Object('56', 'IG', {
+                        title: detail[31][0],
+                        popup: {
+                            title: detail[31][0],
+                            detail: 'new case : '+detail[31][1] + "<br/>"+'total case : '+detail[31][2] + "<br/>"+'total death : '+detail[31][3]
+                        },
+                        // label: detail[31][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[31]  //สีพื้นหลัง
+                    });
+                    var object33 = new longdo.Overlays.Object('82', 'IG', {
+                        title: detail[32][0],
+                        popup: {
+                            title: detail[32][0],
+                            detail: 'new case : '+detail[32][1] + "<br/>"+'total case : '+detail[32][2] + "<br/>"+'total death : '+detail[32][3]
+                        },
+                        // label: detail[32][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[32]  //สีพื้นหลัง
+                    });
+                    var object34 = new longdo.Overlays.Object('93', 'IG', {
+                        title: detail[33][0],
+                        popup: {
+                            title: detail[33][0],
+                            detail: 'new case : '+detail[33][1] + "<br/>"+'total case : '+detail[33][2] + "<br/>"+'total death : '+detail[33][3]
+                        },
+                        // label: detail[33][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[33]  //สีพื้นหลัง
+                    });
+                    var object35 = new longdo.Overlays.Object('66', 'IG', {
+                        title: detail[34][0],
+                        popup: {
+                            title: detail[34][0],
+                            detail: 'new case : '+detail[34][1] + "<br/>"+'total case : '+detail[34][2] + "<br/>"+'total death : '+detail[34][3]
+                        },
+                        // label: detail[34][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[34]  //สีพื้นหลัง
+                    });
+                    var object36 = new longdo.Overlays.Object('65', 'IG', {
+                        title: detail[35][0],
+                        popup: {
+                            title: detail[35][0],
+                            detail: 'new case : '+detail[35][1] + "<br/>"+'total case : '+detail[35][2] + "<br/>"+'total death : '+detail[35][3]
+                        },
+                        // label: detail[35][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[35]  //สีพื้นหลัง
+                    });
+                    var object37 = new longdo.Overlays.Object('83', 'IG', {
+                        title: detail[36][0],
+                        popup: {
+                            title: detail[36][0],
+                            detail: 'new case : '+detail[36][1] + "<br/>"+'total case : '+detail[36][2] + "<br/>"+'total death : '+detail[36][3]
+                        },
+                        // label: detail[36][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[36]  //สีพื้นหลัง
+                    });
+                    var object38 = new longdo.Overlays.Object('44', 'IG', {
+                        title: detail[37][0],
+                        popup: {
+                            title: detail[37][0],
+                            detail: 'new case : '+detail[37][1] + "<br/>"+'total case : '+detail[37][2] + "<br/>"+'total death : '+detail[37][3]
+                        },
+                        // label: detail[37][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[37]  //สีพื้นหลัง
+                    });
+                    var object39 = new longdo.Overlays.Object('49', 'IG', {
+                        title: detail[38][0],
+                        popup: {
+                            title: detail[38][0],
+                            detail: 'new case : '+detail[38][1] + "<br/>"+'total case : '+detail[38][2] + "<br/>"+'total death : '+detail[38][3]
+                        },
+                        // label: detail[38][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[38]  //สีพื้นหลัง
+                    });
+                    var object40 = new longdo.Overlays.Object('95', 'IG', {
+                        title: detail[39][0],
+                        popup: {
+                            title: detail[39][0],
+                            detail: 'new case : '+detail[39][1] + "<br/>"+'total case : '+detail[39][2] + "<br/>"+'total death : '+detail[39][3]
+                        },
+                        // label: detail[39][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[39]  //สีพื้นหลัง
+                    });
+                    var object41 = new longdo.Overlays.Object('35', 'IG', {
+                        title: detail[40][0],
+                        popup: {
+                            title: detail[40][0],
+                            detail: 'new case : '+detail[40][1] + "<br/>"+'total case : '+detail[40][2] + "<br/>"+'total death : '+detail[40][3]
+                        },
+                        // label: detail[40][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[40]  //สีพื้นหลัง
+                    });
+                    var object42 = new longdo.Overlays.Object('45', 'IG', {
+                        title: detail[41][0],
+                        popup: {
+                            title: detail[41][0],
+                            detail: 'new case : '+detail[41][1] + "<br/>"+'total case : '+detail[41][2] + "<br/>"+'total death : '+detail[41][3]
+                        },
+                        // label: detail[41][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[41]  //สีพื้นหลัง
+                    });
+                    var object43 = new longdo.Overlays.Object('85', 'IG', {
+                        title: detail[42][0],
+                        popup: {
+                            title: detail[42][0],
+                            detail: 'new case : '+detail[42][1] + "<br/>"+'total case : '+detail[42][2] + "<br/>"+'total death : '+detail[42][3]
+                        },
+                        // label: detail[42][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[42]  //สีพื้นหลัง
+                    });
+                    var object44 = new longdo.Overlays.Object('21', 'IG', {
+                        title: detail[43][0],
+                        popup: {
+                            title: detail[43][0],
+                            detail: 'new case : '+detail[43][1] + "<br/>"+'total case : '+detail[43][2] + "<br/>"+'total death : '+detail[43][3]
+                        },
+                        // label: detail[43][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[43]  //สีพื้นหลัง
+                    });
+                    var object45 = new longdo.Overlays.Object('70', 'IG', {
+                        title: detail[44][0],
+                        popup: {
+                            title: detail[44][0],
+                            detail: 'new case : '+detail[44][1] + "<br/>"+'total case : '+detail[44][2] + "<br/>"+'total death : '+detail[44][3]
+                        },
+                        // label: detail[44][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[44]  //สีพื้นหลัง
+                    });
+                    var object46 = new longdo.Overlays.Object('16', 'IG', {
+                        title: detail[45][0],
+                        popup: {
+                            title: detail[45][0],
+                            detail: 'new case : '+detail[45][1] + "<br/>"+'total case : '+detail[45][2] + "<br/>"+'total death : '+detail[45][3]
+                        },
+                        // label: detail[45][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[45]  //สีพื้นหลัง
+                    });
+                    var object47 = new longdo.Overlays.Object('52', 'IG', {
+                        title: detail[46][0],
+                        popup: {
+                            title: detail[46][0],
+                            detail: 'new case : '+detail[46][1] + "<br/>"+'total case : '+detail[46][2] + "<br/>"+'total death : '+detail[46][3]
+                        },
+                        // label: detail[46][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[46]  //สีพื้นหลัง
+                    });
+                    var object48 = new longdo.Overlays.Object('51', 'IG', {
+                        title: detail[47][0],
+                        popup: {
+                            title: detail[47][0],
+                            detail: 'new case : '+detail[47][1] + "<br/>"+'total case : '+detail[47][2] + "<br/>"+'total death : '+detail[47][3]
+                        },
+                        // label: detail[47][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[47]  //สีพื้นหลัง
+                    });
+                    var object49 = new longdo.Overlays.Object('33', 'IG', {
+                        title: detail[48][0],
+                        popup: {
+                            title: detail[48][0],
+                            detail: 'new case : '+detail[48][1] + "<br/>"+'total case : '+detail[48][2] + "<br/>"+'total death : '+detail[48][3]
+                        },
+                        // label: detail[48][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[48]  //สีพื้นหลัง
+                    });
+                    var object50 = new longdo.Overlays.Object('47', 'IG', {
+                        title: detail[49][0],
+                        popup: {
+                            title: detail[49][0],
+                            detail: 'new case : '+detail[49][1] + "<br/>"+'total case : '+detail[49][2] + "<br/>"+'total death : '+detail[49][3]
+                        },
+                        // label: detail[49][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[49]  //สีพื้นหลัง
+                    });
+                    var object51 = new longdo.Overlays.Object('90', 'IG', {
+                        title: detail[50][0],
+                        popup: {
+                            title: detail[50][0],
+                            detail: 'new case : '+detail[50][1] + "<br/>"+'total case : '+detail[50][2] + "<br/>"+'total death : '+detail[50][3]
+                        },
+                        // label: detail[50][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[50]  //สีพื้นหลัง
+                    });
+                    var object52 = new longdo.Overlays.Object('91', 'IG', {
+                        title: detail[51][0],
+                        popup: {
+                            title: detail[51][0],
+                            detail: 'new case : '+detail[51][1] + "<br/>"+'total case : '+detail[51][2] + "<br/>"+'total death : '+detail[51][3]
+                        },
+                        // label: detail[51][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[51]  //สีพื้นหลัง
+                    });
+                    var object53 = new longdo.Overlays.Object('11', 'IG', {
+                        title: detail[52][0],
+                        popup: {
+                            title: detail[52][0],
+                            detail: 'new case : '+detail[52][1] + "<br/>"+'total case : '+detail[52][2] + "<br/>"+'total death : '+detail[52][3]
+                        },
+                        // label: detail[52][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[52]  //สีพื้นหลัง
+                    });
+                    var object54 = new longdo.Overlays.Object('75', 'IG', {
+                        title: detail[53][0],
+                        popup: {
+                            title: detail[53][0],
+                            detail: 'new case : '+detail[53][1] + "<br/>"+'total case : '+detail[53][2] + "<br/>"+'total death : '+detail[53][3]
+                        },
+                        // label: detail[53][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[53]  //สีพื้นหลัง
+                    });
+                    var object55 = new longdo.Overlays.Object('74', 'IG', {
+                        title: detail[54][0],
+                        popup: {
+                            title: detail[54][0],
+                            detail: 'new case : '+detail[54][1] + "<br/>"+'total case : '+detail[54][2] + "<br/>"+'total death : '+detail[54][3]
+                        },
+                        // label: detail[54][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[54]  //สีพื้นหลัง
+                    });
+                    var object56 = new longdo.Overlays.Object('19', 'IG', {
+                        title: detail[55][0],
+                        popup: {
+                            title: detail[55][0],
+                            detail: 'new case : '+detail[55][1] + "<br/>"+'total case : '+detail[55][2] + "<br/>"+'total death : '+detail[55][3]
+                        },
+                        // label: detail[55][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[55]  //สีพื้นหลัง
+                    });
+                    var object57 = new longdo.Overlays.Object('27', 'IG', {
+                        title: detail[56][0],
+                        popup: {
+                            title: detail[56][0],
+                            detail: 'new case : '+detail[56][1] + "<br/>"+'total case : '+detail[56][2] + "<br/>"+'total death : '+detail[56][3]
+                        },
+                        // label: detail[56][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[56]  //สีพื้นหลัง
+                    });
+                    var object58 = new longdo.Overlays.Object('17', 'IG', {
+                        title: detail[57][0],
+                        popup: {
+                            title: detail[57][0],
+                            detail: 'new case : '+detail[57][1] + "<br/>"+'total case : '+detail[57][2] + "<br/>"+'total death : '+detail[57][3]
+                        },
+                        // label: detail[57][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[57]  //สีพื้นหลัง
+                    });
+                    var object59 = new longdo.Overlays.Object('72', 'IG', {
+                        title: detail[58][0],
+                        popup: {
+                            title: detail[58][0],
+                            detail: 'new case : '+detail[58][1] + "<br/>"+'total case : '+detail[58][2] + "<br/>"+'total death : '+detail[58][3]
+                        },
+                        // label: detail[58][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[58]  //สีพื้นหลัง
+                    });
+                    var object60 = new longdo.Overlays.Object('84', 'IG', {
+                        title: detail[59][0],
+                        popup: {
+                            title: detail[59][0],
+                            detail: 'new case : '+detail[59][1] + "<br/>"+'total case : '+detail[59][2] + "<br/>"+'total death : '+detail[59][3]
+                        },
+                        // label: detail[59][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[59]  //สีพื้นหลัง
+                    });
+                    var object61 = new longdo.Overlays.Object('32', 'IG', {
+                        title: detail[60][0],
+                        popup: {
+                            title: detail[60][0],
+                            detail: 'new case : '+detail[60][1] + "<br/>"+'total case : '+detail[60][2] + "<br/>"+'total death : '+detail[60][3]
+                        },
+                        // label: detail[60][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[60]  //สีพื้นหลัง
+                    });
+                    var object62 = new longdo.Overlays.Object('64', 'IG', {
+                        title: detail[61][0],
+                        popup: {
+                            title: detail[61][0],
+                            detail: 'new case : '+detail[61][1] + "<br/>"+'total case : '+detail[61][2] + "<br/>"+'total death : '+detail[61][3]
+                        },
+                        // label: detail[61][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[61]  //สีพื้นหลัง
+                    });
+                    var object63 = new longdo.Overlays.Object('43', 'IG', {
+                        title: detail[62][0],
+                        popup: {
+                            title: detail[62][0],
+                            detail: 'new case : '+detail[62][1] + "<br/>"+'total case : '+detail[62][2] + "<br/>"+'total death : '+detail[62][3]
+                        },
+                        // label: detail[62][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[62]  //สีพื้นหลัง
+                    });
+                    var object64 = new longdo.Overlays.Object('39', 'IG', {
+                        title: detail[63][0],
+                        popup: {
+                            title: detail[63][0],
+                            detail: 'new case : '+detail[63][1] + "<br/>"+'total case : '+detail[63][2] + "<br/>"+'total death : '+detail[63][3]
+                        },
+                        // label: detail[63][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[63]  //สีพื้นหลัง
+                    });
+                    var object65 = new longdo.Overlays.Object('15', 'IG', {
+                        title: detail[64][0],
+                        popup: {
+                            title: detail[64][0],
+                            detail: 'new case : '+detail[64][1] + "<br/>"+'total case : '+detail[64][2] + "<br/>"+'total death : '+detail[64][3]
+                        },
+                        // label: detail[64][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[64]  //สีพื้นหลัง
+                    });
+                    var object66 = new longdo.Overlays.Object('37', 'IG', {
+                        title: detail[65][0],
+                        popup: {
+                            title: detail[65][0],
+                            detail: 'new case : '+detail[65][1] + "<br/>"+'total case : '+detail[65][2] + "<br/>"+'total death : '+detail[65][3]
+                        },
+                        // label: detail[65][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[65]  //สีพื้นหลัง
+                    });
+                    var object67 = new longdo.Overlays.Object('41', 'IG', {
+                        title: detail[66][0],
+                        popup: {
+                            title: detail[66][0],
+                            detail: 'new case : '+detail[66][1] + "<br/>"+'total case : '+detail[66][2] + "<br/>"+'total death : '+detail[66][3]
+                        },
+                        // label: detail[66][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[66]  //สีพื้นหลัง
+                    });
+                    var object68 = new longdo.Overlays.Object('53', 'IG', {
+                        title: detail[67][0],
+                        popup: {
+                            title: detail[67][0],
+                            detail: 'new case : '+detail[67][1] + "<br/>"+'total case : '+detail[67][2] + "<br/>"+'total death : '+detail[67][3]
+                        },
+                        // label: detail[67][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[67]  //สีพื้นหลัง
+                    });
+                    var object69 = new longdo.Overlays.Object('61', 'IG', {
+                        title: detail[68][0],
+                        popup: {
+                            title: detail[68][0],
+                            detail: 'new case : '+detail[68][1] + "<br/>"+'total case : '+detail[68][2] + "<br/>"+'total death : '+detail[68][3]
+                        },
+                        // label: detail[68][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[68]  //สีพื้นหลัง
+                    });
+                    var object70 = new longdo.Overlays.Object('34', 'IG', {
+                        title: detail[69][0],
+                        popup: {
+                            title: detail[69][0],
+                            detail: 'new case : '+detail[69][1] + "<br/>"+'total case : '+detail[69][2] + "<br/>"+'total death : '+detail[69][3]
+                        },
+                        // label: detail[69][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[69]  //สีพื้นหลัง
+                    });
+                    var object71 = new longdo.Overlays.Object('57', 'IG', {
+                        title: detail[70][0],
+                        popup: {
+                            title: detail[70][0],
+                            detail: 'new case : '+detail[70][1] + "<br/>"+'total case : '+detail[70][2] + "<br/>"+'total death : '+detail[70][3]
+                        },
+                        // label: detail[70][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[70]  //สีพื้นหลัง
+                    });
+                    var object72 = new longdo.Overlays.Object('50', 'IG', {
+                        title: detail[71][0],
+                        popup: {
+                            title: detail[71][0],
+                            detail: 'new case : '+detail[71][1] + "<br/>"+'total case : '+detail[71][2] + "<br/>"+'total death : '+detail[71][3]
+                        },
+                        // label: detail[71][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[71]  //สีพื้นหลัง
+                    });
+                    var object73 = new longdo.Overlays.Object('76', 'IG', {
+                        title: detail[72][0],
+                        popup: {
+                            title: detail[72][0],
+                            detail: 'new case : '+detail[72][1] + "<br/>"+'total case : '+detail[72][2] + "<br/>"+'total death : '+detail[72][3]
+                        },
+                        // label: detail[72][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[72]  //สีพื้นหลัง
+                    });
+                    var object74 = new longdo.Overlays.Object('67', 'IG', {
+                        title: detail[73][0],
+                        popup: {
+                            title: detail[73][0],
+                            detail: 'new case : '+detail[73][1] + "<br/>"+'total case : '+detail[73][2] + "<br/>"+'total death : '+detail[73][3]
+                        },
+                        // label: detail[73][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[73]  //สีพื้นหลัง
+                    });
+                    var object75 = new longdo.Overlays.Object('42', 'IG', {
+                        title: detail[74][0],
+                        popup: {
+                            title: detail[74][0],
+                            detail: 'new case : '+detail[74][1] + "<br/>"+'total case : '+detail[74][2] + "<br/>"+'total death : '+detail[74][3]
+                        },
+                        // label: detail[74][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[74]  //สีพื้นหลัง
+                    });
+                    var object76 = new longdo.Overlays.Object('54', 'IG', {
+                        title: detail[75][0],
+                        popup: {
+                            title: detail[75][0],
+                            detail: 'new case : '+detail[75][1] + "<br/>"+'total case : '+detail[75][2] + "<br/>"+'total death : '+detail[75][3]
+                        },
+                        // label: detail[75][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[75]  //สีพื้นหลัง
+                    });
+                    var object77 = new longdo.Overlays.Object('58', 'IG', {
+                        title: detail[76][0],
+                        popup: {
+                            title: detail[76][0],
+                            detail: 'new case : '+detail[76][1] + "<br/>"+'total case : '+detail[76][2] + "<br/>"+'total death : '+detail[76][3]
+                        },
+                        // label: detail[76][0], //ข้อความบน objec
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_caseColor[76]  //สีพื้นหลัง
+                    });
+                    map.Overlays.load(object1);
+                    map.Overlays.load(object2);
+                    map.Overlays.load(object3);
+                    map.Overlays.load(object4);
+                    map.Overlays.load(object5);
+                    map.Overlays.load(object6);
+                    map.Overlays.load(object7);
+                    map.Overlays.load(object8);
+                    map.Overlays.load(object9);
+                    map.Overlays.load(object10);
+                    map.Overlays.load(object11);
+                    map.Overlays.load(object12);
+                    map.Overlays.load(object13);
+                    map.Overlays.load(object14);
+                    map.Overlays.load(object15);
+                    map.Overlays.load(object16);
+                    map.Overlays.load(object17);
+                    map.Overlays.load(object18);
+                    map.Overlays.load(object19);
+                    map.Overlays.load(object20);
+                    map.Overlays.load(object21);
+                    map.Overlays.load(object22);
+                    map.Overlays.load(object23);
+                    map.Overlays.load(object24);
+                    map.Overlays.load(object25);
+                    map.Overlays.load(object26);
+                    map.Overlays.load(object27);
+                    map.Overlays.load(object28);
+                    map.Overlays.load(object29);
+                    map.Overlays.load(object30);
+                    map.Overlays.load(object31);
+                    map.Overlays.load(object32);
+                    map.Overlays.load(object33);
+                    map.Overlays.load(object34);
+                    map.Overlays.load(object35);
+                    map.Overlays.load(object36);
+                    map.Overlays.load(object37);
+                    map.Overlays.load(object38);
+                    map.Overlays.load(object39);
+                    map.Overlays.load(object40);
+                    map.Overlays.load(object41);
+                    map.Overlays.load(object42);
+                    map.Overlays.load(object43);
+                    map.Overlays.load(object44);
+                    map.Overlays.load(object45);
+                    map.Overlays.load(object46);
+                    map.Overlays.load(object47);
+                    map.Overlays.load(object48);
+                    map.Overlays.load(object49);
+                    map.Overlays.load(object50);
+                    map.Overlays.load(object51);
+                    map.Overlays.load(object52);
+                    map.Overlays.load(object53);
+                    map.Overlays.load(object54);
+                    map.Overlays.load(object55);
+                    map.Overlays.load(object56);
+                    map.Overlays.load(object57);
+                    map.Overlays.load(object58);
+                    map.Overlays.load(object59);
+                    map.Overlays.load(object60);
+                    map.Overlays.load(object61);
+                    map.Overlays.load(object62);
+                    map.Overlays.load(object63);
+                    map.Overlays.load(object64);
+                    map.Overlays.load(object65);
+                    map.Overlays.load(object66);
+                    map.Overlays.load(object67);
+                    map.Overlays.load(object68);
+                    map.Overlays.load(object69);
+                    map.Overlays.load(object70);
+                    map.Overlays.load(object71);
+                    map.Overlays.load(object72);
+                    map.Overlays.load(object73);
+                    map.Overlays.load(object74);
+                    map.Overlays.load(object75);
+                    map.Overlays.load(object76);
+                    map.Overlays.load(object77);
+                }
+                function totaldeath() {
+                    map.Overlays.clear()
+                    var object1 = new longdo.Overlays.Object('81', 'IG', {
+                        title: detail[0][0],
+                        popup: {
+                            title: detail[0][0],
+                            detail: 'new case : '+detail[0][1] + "<br/>"+'total case : '+detail[0][2] + "<br/>"+'total death : '+detail[0][3]
+                        },
+                        // label: detail[0][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[0]  //สีพื้นหลัง
+                    });
+                    var object2 = new longdo.Overlays.Object('10', 'IG', {
+                        // title: detail[1][0],
+                        popup: {
+                            title: detail[1][0],
+                            detail: 'new case : '+detail[1][1] + "<br/>"+'total case : '+detail[1][2] + "<br/>"+'total death : '+detail[1][3]
+                        },
+                        // label: detail[1][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[1]  //สีพื้นหลัง
+                    });
+                    var object3 = new longdo.Overlays.Object('71', 'IG', {
+                        title: detail[2][0],
+                        popup: {
+                            title: detail[2][0],
+                            detail: 'new case : '+detail[2][1] + "<br/>"+'total case : '+detail[2][2] + "<br/>"+'total death : '+detail[2][3]
+                        },
+                        // label: detail[2][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[2]  //สีพื้นหลัง
+                    });
+                    var object4 = new longdo.Overlays.Object('46', 'IG', {
+                        title: detail[3][0],
+                        popup: {
+                            title: detail[3][0],
+                            detail: 'new case : '+detail[3][1] + "<br/>"+'total case : '+detail[3][2] + "<br/>"+'total death : '+detail[3][3]
+                        },
+                        // label: detail[3][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[3]  //สีพื้นหลัง
+                    });
+                    var object5 = new longdo.Overlays.Object('62', 'IG', {
+                        title: detail[4][0],
+                        popup: {
+                            title: detail[4][0],
+                            detail: 'new case : '+detail[4][1] + "<br/>"+'total case : '+detail[4][2] + "<br/>"+'total death : '+detail[4][3]
+                        },
+                        // label: detail[4][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[4]  //สีพื้นหลัง
+                    });
+                    var object6 = new longdo.Overlays.Object('40', 'IG', {
+                        title: detail[5][0],
+                        popup: {
+                            title: detail[5][0],
+                            detail: 'new case : '+detail[5][1] + "<br/>"+'total case : '+detail[5][2] + "<br/>"+'total death : '+detail[5][3]
+                        },
+                        // label: detail[5][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[5]  //สีพื้นหลัง
+                    });
+                    var object7 = new longdo.Overlays.Object('22', 'IG', {
+                        title: detail[6][0],
+                        popup: {
+                            title: detail[6][0],
+                            detail: 'new case : '+detail[6][1] + "<br/>"+'total case : '+detail[6][2] + "<br/>"+'total death : '+detail[6][3]
+                        },
+                        // label: detail[6][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[6]  //สีพื้นหลัง
+                    });
+                    var object8 = new longdo.Overlays.Object('24', 'IG', {
+                        title: detail[7][0],
+                        popup: {
+                            title: detail[7][0],
+                            detail: 'new case : '+detail[7][1] + "<br/>"+'total case : '+detail[7][2] + "<br/>"+'total death : '+detail[7][3]
+                        },
+                        // label: detail[7][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[7]  //สีพื้นหลัง
+                    });
+                    var object9 = new longdo.Overlays.Object('20', 'IG', {
+                        title: detail[8][0],
+                        popup: {
+                            title: detail[8][0],
+                            detail: 'new case : '+detail[8][1] + "<br/>"+'total case : '+detail[8][2] + "<br/>"+'total death : '+detail[8][3]
+                        },
+                        // label: detail[8][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[8]  //สีพื้นหลัง
+                    });
+                    var object10 = new longdo.Overlays.Object('18', 'IG', {
+                        title: detail[9][0],
+                        popup: {
+                            title: detail[9][0],
+                            detail: 'new case : '+detail[9][1] + "<br/>"+'total case : '+detail[9][2] + "<br/>"+'total death : '+detail[9][3]
+                        },
+                        // label: detail[9][0], //ข้อความบน object
+                        lineWidth: 1,        
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[9]  //สีพื้นหลัง
+                    });
+                    var object11 = new longdo.Overlays.Object('36', 'IG', {
+                        title: detail[10][0],
+                        popup: {
+                            title: detail[10][0],
+                            detail: 'new case : '+detail[10][1] + "<br/>"+'total case : '+detail[10][2] + "<br/>"+'total death : '+detail[10][3]
+                        },
+                        // label: detail[10][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[10]  //สีพื้นหลัง
+                    });
+                    var object12 = new longdo.Overlays.Object('86', 'IG', {
+                        title: detail[11][0],
+                        popup: {
+                            title: detail[11][0],
+                            detail: 'new case : '+detail[11][1] + "<br/>"+'total case : '+detail[11][2] + "<br/>"+'total death : '+detail[11][3]
+                        },
+                        // label: detail[11][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[11]  //สีพื้นหลัง
+                    });
+                    var object13 = new longdo.Overlays.Object('92', 'IG', {
+                        title: detail[12][0],
+                        popup: {
+                            title: detail[12][0],
+                            detail: 'new case : '+detail[12][1] + "<br/>"+'total case : '+detail[12][2] + "<br/>"+'total death : '+detail[12][3]
+                        },
+                        // label: detail[12][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[12]  //สีพื้นหลัง
+                    });
+                    var object14 = new longdo.Overlays.Object('23', 'IG', {
+                        title: detail[13][0],
+                        popup: {
+                            title: detail[13][0],
+                            detail: 'new case : '+detail[13][1] + "<br/>"+'total case : '+detail[13][2] + "<br/>"+'total death : '+detail[13][3]
+                        },
+                        // label: detail[13][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[13]  //สีพื้นหลัง
+                    });
+                    var object15 = new longdo.Overlays.Object('63', 'IG', {
+                        title: detail[14][0],
+                        popup: {
+                            title: detail[14][0],
+                            detail: 'new case : '+detail[14][1] + "<br/>"+'total case : '+detail[14][2] + "<br/>"+'total death : '+detail[14][3]
+                        },
+                        // label: detail[14][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[14]  //สีพื้นหลัง
+                    });
+                    var object16 = new longdo.Overlays.Object('26', 'IG', {
+                        title: detail[15][0],
+                        popup: {
+                            title: detail[15][0],
+                            detail: 'new case : '+detail[15][1] + "<br/>"+'total case : '+detail[15][2] + "<br/>"+'total death : '+detail[15][3]
+                        },
+                        // label: detail[15][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[15]  //สีพื้นหลัง
+                    });
+                    var object17 = new longdo.Overlays.Object('73', 'IG', {
+                        title: detail[16][0],
+                        popup: {
+                            title: detail[16][0],
+                            detail: 'new case : '+detail[16][1] + "<br/>"+'total case : '+detail[16][2] + "<br/>"+'total death : '+detail[16][3]
+                        },
+                        // label: detail[16][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[16]  //สีพื้นหลัง
+                    });
+                    var object18 = new longdo.Overlays.Object('48', 'IG', {
+                        title: detail[17][0],
+                        popup: {
+                            title: detail[17][0],
+                            detail: 'new case : '+detail[17][1] + "<br/>"+'total case : '+detail[17][2] + "<br/>"+'total death : '+detail[17][3]
+                        },
+                        // label: detail[17][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[17]  //สีพื้นหลัง
+                    });
+                    var object19 = new longdo.Overlays.Object('30', 'IG', {
+                        title: detail[18][0],
+                        popup: {
+                            title: detail[18][0],
+                            detail: 'new case : '+detail[18][1] + "<br/>"+'total case : '+detail[18][2] + "<br/>"+'total death : '+detail[18][3]
+                        },
+                        // label: detail[18][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[18]  //สีพื้นหลัง
+                    });
+                    var object20 = new longdo.Overlays.Object('80', 'IG', {
+                        title: detail[19][0],
+                        popup: {
+                            title: detail[19][0],
+                            detail: 'new case : '+detail[19][1] + "<br/>"+'total case : '+detail[19][2] + "<br/>"+'total death : '+detail[19][3]
+                        },
+                        // label: detail[19][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[19]  //สีพื้นหลัง
+                    });
+                    var object21 = new longdo.Overlays.Object('60', 'IG', {
+                        title: detail[20][0],
+                        popup: {
+                            title: detail[20][0],
+                            detail: 'new case : '+detail[20][1] + "<br/>"+'total case : '+detail[20][2] + "<br/>"+'total death : '+detail[20][3]
+                        },
+                        // label: detail[20][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[20]  //สีพื้นหลัง
+                    });
+                    var object22 = new longdo.Overlays.Object('12', 'IG', {
+                        title: detail[21][0],
+                        popup: {
+                            title: detail[21][0],
+                            detail: 'new case : '+detail[21][1] + "<br/>"+'total case : '+detail[21][2] + "<br/>"+'total death : '+detail[21][3]
+                        },
+                        // label: detail[21][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[21]  //สีพื้นหลัง
+                    });
+                    var object23 = new longdo.Overlays.Object('96', 'IG', {
+                        title: detail[22][0],
+                        popup: {
+                            title: detail[22][0],
+                            detail: 'new case : '+detail[22][1] + "<br/>"+'total case : '+detail[22][2] + "<br/>"+'total death : '+detail[22][3]
+                        },
+                        // label: detail[22][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[22]  //สีพื้นหลัง
+                    });
+                    var object24 = new longdo.Overlays.Object('55', 'IG', {
+                        title: detail[23][0],
+                        popup: {
+                            title: detail[23][0],
+                            detail: 'new case : '+detail[23][1] + "<br/>"+'total case : '+detail[23][2] + "<br/>"+'total death : '+detail[23][3]
+                        },
+                        // label: detail[23][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[23]  //สีพื้นหลัง
+                    });
+                    var object25 = new longdo.Overlays.Object('38', 'IG', {
+                        title: detail[24][0],
+                        popup: {
+                            title: detail[24][0],
+                            detail: 'new case : '+detail[24][1] + "<br/>"+'total case : '+detail[24][2] + "<br/>"+'total death : '+detail[24][3]
+                        },
+                        // label: detail[24][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[24]  //สีพื้นหลัง
+                    });
+                    var object26 = new longdo.Overlays.Object('31', 'IG', {
+                        title: detail[25][0],
+                        popup: {
+                            title: detail[25][0],
+                            detail: 'new case : '+detail[25][1] + "<br/>"+'total case : '+detail[25][2] + "<br/>"+'total death : '+detail[25][3]
+                        },
+                        // label: detail[25][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[25]  //สีพื้นหลัง
+                    });
+                    var object27 = new longdo.Overlays.Object('13', 'IG', {
+                        title: detail[26][0],
+                        popup: {
+                            title: detail[26][0],
+                            detail: 'new case : '+detail[26][1] + "<br/>"+'total case : '+detail[26][2] + "<br/>"+'total death : '+detail[26][3]
+                        },
+                        // label: detail[26][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[26]  //สีพื้นหลัง
+                    });
+                    var object28 = new longdo.Overlays.Object('77', 'IG', {
+                        title: detail[27][0],
+                        popup: {
+                            title: detail[27][0],
+                            detail: 'new case : '+detail[27][1] + "<br/>"+'total case : '+detail[27][2] + "<br/>"+'total death : '+detail[27][3]
+                        },
+                        // label: detail[27][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[27]  //สีพื้นหลัง
+                    });
+                    var object29 = new longdo.Overlays.Object('25', 'IG', {
+                        title: detail[28][0],
+                        popup: {
+                            title: detail[28][0],
+                            detail: 'new case : '+detail[28][1] + "<br/>"+'total case : '+detail[28][2] + "<br/>"+'total death : '+detail[28][3]
+                        },
+                        // label: detail[28][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[28]  //สีพื้นหลัง
+                    });
+                    var object30 = new longdo.Overlays.Object('94', 'IG', {
+                        title: detail[29][0],
+                        popup: {
+                            title: detail[29][0],
+                            detail: 'new case : '+detail[29][1] + "<br/>"+'total case : '+detail[29][2] + "<br/>"+'total death : '+detail[29][3]
+                        },
+                        // label: detail[29][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[29]  //สีพื้นหลัง
+                    });
+                    var object31 = new longdo.Overlays.Object('14', 'IG', {
+                        title: detail[30][0],
+                        popup: {
+                            title: detail[30][0],
+                            detail: 'new case : '+detail[30][1] + "<br/>"+'total case : '+detail[30][2] + "<br/>"+'total death : '+detail[30][3]
+                        },
+                        // label: detail[30][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[30]  //สีพื้นหลัง
+                    });
+                    var object32 = new longdo.Overlays.Object('56', 'IG', {
+                        title: detail[31][0],
+                        popup: {
+                            title: detail[31][0],
+                            detail: 'new case : '+detail[31][1] + "<br/>"+'total case : '+detail[31][2] + "<br/>"+'total death : '+detail[31][3]
+                        },
+                        // label: detail[31][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[31]  //สีพื้นหลัง
+                    });
+                    var object33 = new longdo.Overlays.Object('82', 'IG', {
+                        title: detail[32][0],
+                        popup: {
+                            title: detail[32][0],
+                            detail: 'new case : '+detail[32][1] + "<br/>"+'total case : '+detail[32][2] + "<br/>"+'total death : '+detail[32][3]
+                        },
+                        // label: detail[32][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[32]  //สีพื้นหลัง
+                    });
+                    var object34 = new longdo.Overlays.Object('93', 'IG', {
+                        title: detail[33][0],
+                        popup: {
+                            title: detail[33][0],
+                            detail: 'new case : '+detail[33][1] + "<br/>"+'total case : '+detail[33][2] + "<br/>"+'total death : '+detail[33][3]
+                        },
+                        // label: detail[33][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[33]  //สีพื้นหลัง
+                    });
+                    var object35 = new longdo.Overlays.Object('66', 'IG', {
+                        title: detail[34][0],
+                        popup: {
+                            title: detail[34][0],
+                            detail: 'new case : '+detail[34][1] + "<br/>"+'total case : '+detail[34][2] + "<br/>"+'total death : '+detail[34][3]
+                        },
+                        // label: detail[34][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[34]  //สีพื้นหลัง
+                    });
+                    var object36 = new longdo.Overlays.Object('65', 'IG', {
+                        title: detail[35][0],
+                        popup: {
+                            title: detail[35][0],
+                            detail: 'new case : '+detail[35][1] + "<br/>"+'total case : '+detail[35][2] + "<br/>"+'total death : '+detail[35][3]
+                        },
+                        // label: detail[35][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[35]  //สีพื้นหลัง
+                    });
+                    var object37 = new longdo.Overlays.Object('83', 'IG', {
+                        title: detail[36][0],
+                        popup: {
+                            title: detail[36][0],
+                            detail: 'new case : '+detail[36][1] + "<br/>"+'total case : '+detail[36][2] + "<br/>"+'total death : '+detail[36][3]
+                        },
+                        // label: detail[36][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[36]  //สีพื้นหลัง
+                    });
+                    var object38 = new longdo.Overlays.Object('44', 'IG', {
+                        title: detail[37][0],
+                        popup: {
+                            title: detail[37][0],
+                            detail: 'new case : '+detail[37][1] + "<br/>"+'total case : '+detail[37][2] + "<br/>"+'total death : '+detail[37][3]
+                        },
+                        // label: detail[37][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[37]  //สีพื้นหลัง
+                    });
+                    var object39 = new longdo.Overlays.Object('49', 'IG', {
+                        title: detail[38][0],
+                        popup: {
+                            title: detail[38][0],
+                            detail: 'new case : '+detail[38][1] + "<br/>"+'total case : '+detail[38][2] + "<br/>"+'total death : '+detail[38][3]
+                        },
+                        // label: detail[38][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[38]  //สีพื้นหลัง
+                    });
+                    var object40 = new longdo.Overlays.Object('95', 'IG', {
+                        title: detail[39][0],
+                        popup: {
+                            title: detail[39][0],
+                            detail: 'new case : '+detail[39][1] + "<br/>"+'total case : '+detail[39][2] + "<br/>"+'total death : '+detail[39][3]
+                        },
+                        // label: detail[39][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[39]  //สีพื้นหลัง
+                    });
+                    var object41 = new longdo.Overlays.Object('35', 'IG', {
+                        title: detail[40][0],
+                        popup: {
+                            title: detail[40][0],
+                            detail: 'new case : '+detail[40][1] + "<br/>"+'total case : '+detail[40][2] + "<br/>"+'total death : '+detail[40][3]
+                        },
+                        // label: detail[40][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[40]  //สีพื้นหลัง
+                    });
+                    var object42 = new longdo.Overlays.Object('45', 'IG', {
+                        title: detail[41][0],
+                        popup: {
+                            title: detail[41][0],
+                            detail: 'new case : '+detail[41][1] + "<br/>"+'total case : '+detail[41][2] + "<br/>"+'total death : '+detail[41][3]
+                        },
+                        // label: detail[41][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[41]  //สีพื้นหลัง
+                    });
+                    var object43 = new longdo.Overlays.Object('85', 'IG', {
+                        title: detail[42][0],
+                        popup: {
+                            title: detail[42][0],
+                            detail: 'new case : '+detail[42][1] + "<br/>"+'total case : '+detail[42][2] + "<br/>"+'total death : '+detail[42][3]
+                        },
+                        // label: detail[42][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[42]  //สีพื้นหลัง
+                    });
+                    var object44 = new longdo.Overlays.Object('21', 'IG', {
+                        title: detail[43][0],
+                        popup: {
+                            title: detail[43][0],
+                            detail: 'new case : '+detail[43][1] + "<br/>"+'total case : '+detail[43][2] + "<br/>"+'total death : '+detail[43][3]
+                        },
+                        // label: detail[43][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[43]  //สีพื้นหลัง
+                    });
+                    var object45 = new longdo.Overlays.Object('70', 'IG', {
+                        title: detail[44][0],
+                        popup: {
+                            title: detail[44][0],
+                            detail: 'new case : '+detail[44][1] + "<br/>"+'total case : '+detail[44][2] + "<br/>"+'total death : '+detail[44][3]
+                        },
+                        // label: detail[44][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[44]  //สีพื้นหลัง
+                    });
+                    var object46 = new longdo.Overlays.Object('16', 'IG', {
+                        title: detail[45][0],
+                        popup: {
+                            title: detail[45][0],
+                            detail: 'new case : '+detail[45][1] + "<br/>"+'total case : '+detail[45][2] + "<br/>"+'total death : '+detail[45][3]
+                        },
+                        // label: detail[45][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[45]  //สีพื้นหลัง
+                    });
+                    var object47 = new longdo.Overlays.Object('52', 'IG', {
+                        title: detail[46][0],
+                        popup: {
+                            title: detail[46][0],
+                            detail: 'new case : '+detail[46][1] + "<br/>"+'total case : '+detail[46][2] + "<br/>"+'total death : '+detail[46][3]
+                        },
+                        // label: detail[46][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[46]  //สีพื้นหลัง
+                    });
+                    var object48 = new longdo.Overlays.Object('51', 'IG', {
+                        title: detail[47][0],
+                        popup: {
+                            title: detail[47][0],
+                            detail: 'new case : '+detail[47][1] + "<br/>"+'total case : '+detail[47][2] + "<br/>"+'total death : '+detail[47][3]
+                        },
+                        // label: detail[47][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[47]  //สีพื้นหลัง
+                    });
+                    var object49 = new longdo.Overlays.Object('33', 'IG', {
+                        title: detail[48][0],
+                        popup: {
+                            title: detail[48][0],
+                            detail: 'new case : '+detail[48][1] + "<br/>"+'total case : '+detail[48][2] + "<br/>"+'total death : '+detail[48][3]
+                        },
+                        // label: detail[48][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[48]  //สีพื้นหลัง
+                    });
+                    var object50 = new longdo.Overlays.Object('47', 'IG', {
+                        title: detail[49][0],
+                        popup: {
+                            title: detail[49][0],
+                            detail: 'new case : '+detail[49][1] + "<br/>"+'total case : '+detail[49][2] + "<br/>"+'total death : '+detail[49][3]
+                        },
+                        // label: detail[49][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[49]  //สีพื้นหลัง
+                    });
+                    var object51 = new longdo.Overlays.Object('90', 'IG', {
+                        title: detail[50][0],
+                        popup: {
+                            title: detail[50][0],
+                            detail: 'new case : '+detail[50][1] + "<br/>"+'total case : '+detail[50][2] + "<br/>"+'total death : '+detail[50][3]
+                        },
+                        // label: detail[50][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[50]  //สีพื้นหลัง
+                    });
+                    var object52 = new longdo.Overlays.Object('91', 'IG', {
+                        title: detail[51][0],
+                        popup: {
+                            title: detail[51][0],
+                            detail: 'new case : '+detail[51][1] + "<br/>"+'total case : '+detail[51][2] + "<br/>"+'total death : '+detail[51][3]
+                        },
+                        // label: detail[51][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[51]  //สีพื้นหลัง
+                    });
+                    var object53 = new longdo.Overlays.Object('11', 'IG', {
+                        title: detail[52][0],
+                        popup: {
+                            title: detail[52][0],
+                            detail: 'new case : '+detail[52][1] + "<br/>"+'total case : '+detail[52][2] + "<br/>"+'total death : '+detail[52][3]
+                        },
+                        // label: detail[52][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[52]  //สีพื้นหลัง
+                    });
+                    var object54 = new longdo.Overlays.Object('75', 'IG', {
+                        title: detail[53][0],
+                        popup: {
+                            title: detail[53][0],
+                            detail: 'new case : '+detail[53][1] + "<br/>"+'total case : '+detail[53][2] + "<br/>"+'total death : '+detail[53][3]
+                        },
+                        // label: detail[53][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[53]  //สีพื้นหลัง
+                    });
+                    var object55 = new longdo.Overlays.Object('74', 'IG', {
+                        title: detail[54][0],
+                        popup: {
+                            title: detail[54][0],
+                            detail: 'new case : '+detail[54][1] + "<br/>"+'total case : '+detail[54][2] + "<br/>"+'total death : '+detail[54][3]
+                        },
+                        // label: detail[54][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[54]  //สีพื้นหลัง
+                    });
+                    var object56 = new longdo.Overlays.Object('19', 'IG', {
+                        title: detail[55][0],
+                        popup: {
+                            title: detail[55][0],
+                            detail: 'new case : '+detail[55][1] + "<br/>"+'total case : '+detail[55][2] + "<br/>"+'total death : '+detail[55][3]
+                        },
+                        // label: detail[55][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[55]  //สีพื้นหลัง
+                    });
+                    var object57 = new longdo.Overlays.Object('27', 'IG', {
+                        title: detail[56][0],
+                        popup: {
+                            title: detail[56][0],
+                            detail: 'new case : '+detail[56][1] + "<br/>"+'total case : '+detail[56][2] + "<br/>"+'total death : '+detail[56][3]
+                        },
+                        // label: detail[56][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[56]  //สีพื้นหลัง
+                    });
+                    var object58 = new longdo.Overlays.Object('17', 'IG', {
+                        title: detail[57][0],
+                        popup: {
+                            title: detail[57][0],
+                            detail: 'new case : '+detail[57][1] + "<br/>"+'total case : '+detail[57][2] + "<br/>"+'total death : '+detail[57][3]
+                        },
+                        // label: detail[57][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[57]  //สีพื้นหลัง
+                    });
+                    var object59 = new longdo.Overlays.Object('72', 'IG', {
+                        title: detail[58][0],
+                        popup: {
+                            title: detail[58][0],
+                            detail: 'new case : '+detail[58][1] + "<br/>"+'total case : '+detail[58][2] + "<br/>"+'total death : '+detail[58][3]
+                        },
+                        // label: detail[58][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[58]  //สีพื้นหลัง
+                    });
+                    var object60 = new longdo.Overlays.Object('84', 'IG', {
+                        title: detail[59][0],
+                        popup: {
+                            title: detail[59][0],
+                            detail: 'new case : '+detail[59][1] + "<br/>"+'total case : '+detail[59][2] + "<br/>"+'total death : '+detail[59][3]
+                        },
+                        // label: detail[59][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[59]  //สีพื้นหลัง
+                    });
+                    var object61 = new longdo.Overlays.Object('32', 'IG', {
+                        title: detail[60][0],
+                        popup: {
+                            title: detail[60][0],
+                            detail: 'new case : '+detail[60][1] + "<br/>"+'total case : '+detail[60][2] + "<br/>"+'total death : '+detail[60][3]
+                        },
+                        // label: detail[60][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[60]  //สีพื้นหลัง
+                    });
+                    var object62 = new longdo.Overlays.Object('64', 'IG', {
+                        title: detail[61][0],
+                        popup: {
+                            title: detail[61][0],
+                            detail: 'new case : '+detail[61][1] + "<br/>"+'total case : '+detail[61][2] + "<br/>"+'total death : '+detail[61][3]
+                        },
+                        // label: detail[61][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[61]  //สีพื้นหลัง
+                    });
+                    var object63 = new longdo.Overlays.Object('43', 'IG', {
+                        title: detail[62][0],
+                        popup: {
+                            title: detail[62][0],
+                            detail: 'new case : '+detail[62][1] + "<br/>"+'total case : '+detail[62][2] + "<br/>"+'total death : '+detail[62][3]
+                        },
+                        // label: detail[62][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[62]  //สีพื้นหลัง
+                    });
+                    var object64 = new longdo.Overlays.Object('39', 'IG', {
+                        title: detail[63][0],
+                        popup: {
+                            title: detail[63][0],
+                            detail: 'new case : '+detail[63][1] + "<br/>"+'total case : '+detail[63][2] + "<br/>"+'total death : '+detail[63][3]
+                        },
+                        // label: detail[63][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[63]  //สีพื้นหลัง
+                    });
+                    var object65 = new longdo.Overlays.Object('15', 'IG', {
+                        title: detail[64][0],
+                        popup: {
+                            title: detail[64][0],
+                            detail: 'new case : '+detail[64][1] + "<br/>"+'total case : '+detail[64][2] + "<br/>"+'total death : '+detail[64][3]
+                        },
+                        // label: detail[64][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[64]  //สีพื้นหลัง
+                    });
+                    var object66 = new longdo.Overlays.Object('37', 'IG', {
+                        title: detail[65][0],
+                        popup: {
+                            title: detail[65][0],
+                            detail: 'new case : '+detail[65][1] + "<br/>"+'total case : '+detail[65][2] + "<br/>"+'total death : '+detail[65][3]
+                        },
+                        // label: detail[65][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[65]  //สีพื้นหลัง
+                    });
+                    var object67 = new longdo.Overlays.Object('41', 'IG', {
+                        title: detail[66][0],
+                        popup: {
+                            title: detail[66][0],
+                            detail: 'new case : '+detail[66][1] + "<br/>"+'total case : '+detail[66][2] + "<br/>"+'total death : '+detail[66][3]
+                        },
+                        // label: detail[66][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[66]  //สีพื้นหลัง
+                    });
+                    var object68 = new longdo.Overlays.Object('53', 'IG', {
+                        title: detail[67][0],
+                        popup: {
+                            title: detail[67][0],
+                            detail: 'new case : '+detail[67][1] + "<br/>"+'total case : '+detail[67][2] + "<br/>"+'total death : '+detail[67][3]
+                        },
+                        // label: detail[67][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[67]  //สีพื้นหลัง
+                    });
+                    var object69 = new longdo.Overlays.Object('61', 'IG', {
+                        title: detail[68][0],
+                        popup: {
+                            title: detail[68][0],
+                            detail: 'new case : '+detail[68][1] + "<br/>"+'total case : '+detail[68][2] + "<br/>"+'total death : '+detail[68][3]
+                        },
+                        // label: detail[68][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[68]  //สีพื้นหลัง
+                    });
+                    var object70 = new longdo.Overlays.Object('34', 'IG', {
+                        title: detail[69][0],
+                        popup: {
+                            title: detail[69][0],
+                            detail: 'new case : '+detail[69][1] + "<br/>"+'total case : '+detail[69][2] + "<br/>"+'total death : '+detail[69][3]
+                        },
+                        // label: detail[69][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[69]  //สีพื้นหลัง
+                    });
+                    var object71 = new longdo.Overlays.Object('57', 'IG', {
+                        title: detail[70][0],
+                        popup: {
+                            title: detail[70][0],
+                            detail: 'new case : '+detail[70][1] + "<br/>"+'total case : '+detail[70][2] + "<br/>"+'total death : '+detail[70][3]
+                        },
+                        // label: detail[70][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[70]  //สีพื้นหลัง
+                    });
+                    var object72 = new longdo.Overlays.Object('50', 'IG', {
+                        title: detail[71][0],
+                        popup: {
+                            title: detail[71][0],
+                            detail: 'new case : '+detail[71][1] + "<br/>"+'total case : '+detail[71][2] + "<br/>"+'total death : '+detail[71][3]
+                        },
+                        // label: detail[71][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[71]  //สีพื้นหลัง
+                    });
+                    var object73 = new longdo.Overlays.Object('76', 'IG', {
+                        title: detail[72][0],
+                        popup: {
+                            title: detail[72][0],
+                            detail: 'new case : '+detail[72][1] + "<br/>"+'total case : '+detail[72][2] + "<br/>"+'total death : '+detail[72][3]
+                        },
+                        // label: detail[72][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[72]  //สีพื้นหลัง
+                    });
+                    var object74 = new longdo.Overlays.Object('67', 'IG', {
+                        title: detail[73][0],
+                        popup: {
+                            title: detail[73][0],
+                            detail: 'new case : '+detail[73][1] + "<br/>"+'total case : '+detail[73][2] + "<br/>"+'total death : '+detail[73][3]
+                        },
+                        // label: detail[73][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[73]  //สีพื้นหลัง
+                    });
+                    var object75 = new longdo.Overlays.Object('42', 'IG', {
+                        title: detail[74][0],
+                        popup: {
+                            title: detail[74][0],
+                            detail: 'new case : '+detail[74][1] + "<br/>"+'total case : '+detail[74][2] + "<br/>"+'total death : '+detail[74][3]
+                        },
+                        // label: detail[74][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[74]  //สีพื้นหลัง
+                    });
+                    var object76 = new longdo.Overlays.Object('54', 'IG', {
+                        title: detail[75][0],
+                        popup: {
+                            title: detail[75][0],
+                            detail: 'new case : '+detail[75][1] + "<br/>"+'total case : '+detail[75][2] + "<br/>"+'total death : '+detail[75][3]
+                        },
+                        // label: detail[75][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[75]  //สีพื้นหลัง
+                    });
+                    var object77 = new longdo.Overlays.Object('58', 'IG', {
+                        title: detail[76][0],
+                        popup: {
+                            title: detail[76][0],
+                            detail: 'new case : '+detail[76][1] + "<br/>"+'total case : '+detail[76][2] + "<br/>"+'total death : '+detail[76][3]
+                        },
+                        // label: detail[76][0], //ข้อความบน object
+                        lineWidth: 1,
+                        lineColor: '#888', //สีของเส้น
+                        fillColor: total_deathColor[76]  //สีพื้นหลัง
+                    });
+                    map.Overlays.load(object1);
+                    map.Overlays.load(object2);
+                    map.Overlays.load(object3);
+                    map.Overlays.load(object4);
+                    map.Overlays.load(object5);
+                    map.Overlays.load(object6);
+                    map.Overlays.load(object7);
+                    map.Overlays.load(object8);
+                    map.Overlays.load(object9);
+                    map.Overlays.load(object10);
+                    map.Overlays.load(object11);
+                    map.Overlays.load(object12);
+                    map.Overlays.load(object13);
+                    map.Overlays.load(object14);
+                    map.Overlays.load(object15);
+                    map.Overlays.load(object16);
+                    map.Overlays.load(object17);
+                    map.Overlays.load(object18);
+                    map.Overlays.load(object19);
+                    map.Overlays.load(object20);
+                    map.Overlays.load(object21);
+                    map.Overlays.load(object22);
+                    map.Overlays.load(object23);
+                    map.Overlays.load(object24);
+                    map.Overlays.load(object25);
+                    map.Overlays.load(object26);
+                    map.Overlays.load(object27);
+                    map.Overlays.load(object28);
+                    map.Overlays.load(object29);
+                    map.Overlays.load(object30);
+                    map.Overlays.load(object31);
+                    map.Overlays.load(object32);
+                    map.Overlays.load(object33);
+                    map.Overlays.load(object34);
+                    map.Overlays.load(object35);
+                    map.Overlays.load(object36);
+                    map.Overlays.load(object37);
+                    map.Overlays.load(object38);
+                    map.Overlays.load(object39);
+                    map.Overlays.load(object40);
+                    map.Overlays.load(object41);
+                    map.Overlays.load(object42);
+                    map.Overlays.load(object43);
+                    map.Overlays.load(object44);
+                    map.Overlays.load(object45);
+                    map.Overlays.load(object46);
+                    map.Overlays.load(object47);
+                    map.Overlays.load(object48);
+                    map.Overlays.load(object49);
+                    map.Overlays.load(object50);
+                    map.Overlays.load(object51);
+                    map.Overlays.load(object52);
+                    map.Overlays.load(object53);
+                    map.Overlays.load(object54);
+                    map.Overlays.load(object55);
+                    map.Overlays.load(object56);
+                    map.Overlays.load(object57);
+                    map.Overlays.load(object58);
+                    map.Overlays.load(object59);
+                    map.Overlays.load(object60);
+                    map.Overlays.load(object61);
+                    map.Overlays.load(object62);
+                    map.Overlays.load(object63);
+                    map.Overlays.load(object64);
+                    map.Overlays.load(object65);
+                    map.Overlays.load(object66);
+                    map.Overlays.load(object67);
+                    map.Overlays.load(object68);
+                    map.Overlays.load(object69);
+                    map.Overlays.load(object70);
+                    map.Overlays.load(object71);
+                    map.Overlays.load(object72);
+                    map.Overlays.load(object73);
+                    map.Overlays.load(object74);
+                    map.Overlays.load(object75);
+                    map.Overlays.load(object76);
+                    map.Overlays.load(object77);
+                } 
+            </script>
+          
+        </html>
+        
